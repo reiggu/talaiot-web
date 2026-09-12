@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Talaiot · Escáner de cartas TCG</title>
+<meta name="description" content="Escanea tus cartas con la cámara y mira lo que valen, también las japonesas, coreanas y chinas. Precio real, colección organizada y comunidad. Gratis y sin anuncios.">
+<meta property="og:title" content="Talaiot · Escáner de cartas TCG">
+<meta property="og:description" content="Escanea tus cartas y mira lo que valen. Precio real, colección organizada y comunidad. Gratis.">
+<meta property="og:image" content="https://talaiot.app/img/icono-512.png">
+<meta property="og:url" content="https://talaiot.app/">
+<meta name="theme-color" content="#D11F25">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+:root{
+  --beige:#F4F2EC; --beige2:#E9E5DA; --slab:#F8F5EE; --white:#FFFFFF;
+  --ink:#15131A; --ink2:#26222C; --text2:#6B6470; --text3:#9A8F86;
+  --hair:#E6DFD2; --hair2:#EFE9DD;
+  --red:#D11F25; --red0:#EE3B3F; --red2:#AD171C;
+  --yellow:#FFD23F; --led:#2A86D8; --led0:#BFE9FF;
+  --green:#3FAE5A; --cblue:#2F6FA8; --cyellow:#E0B12F; --cred:#C13B2E; --cgreen:#4E8C4A;
+  --f-ui:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --f-num:"Space Grotesk","Plus Jakarta Sans",-apple-system,Helvetica,Arial,sans-serif;
+  --sh-card:0 1px 2px rgba(21,19,26,.05),0 10px 30px -18px rgba(21,19,26,.35);
+  --sh-console:0 30px 60px -30px rgba(173,23,28,.55),0 2px 0 rgba(0,0,0,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--beige);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+:focus-visible{outline:3px solid var(--led);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.02em;line-height:1.1}
+h1{font-size:clamp(2.2rem,5.2vw,3.6rem);font-weight:800}
+h2{font-size:clamp(1.6rem,3.4vw,2.4rem);font-weight:800}
+h3{font-size:1.06rem;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin:0 0 12px}
+.num{font-family:var(--f-num);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.lead{color:var(--text2);font-size:1.08rem;max-width:56ch}
+
+/* ── nav ── */
+.nav{position:sticky;top:0;z-index:30;background:rgba(244,242,236,.86);backdrop-filter:saturate(140%) blur(10px);-webkit-backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--hair)}
+.nav-in{display:flex;align-items:center;gap:22px;height:66px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1.25rem;letter-spacing:-.022em}
+.brand svg{width:34px;height:34px}
+.nav-links{display:none;gap:22px;margin-left:8px;font-weight:600;font-size:.92rem;color:var(--text2)}
+.nav-links a:hover{color:var(--ink)}
+@media(min-width:820px){.nav-links{display:flex}}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-right .btn{display:none}
+@media(min-width:560px){.nav-right .btn{display:inline-flex}}
+.seg{display:flex;background:var(--white);border:1px solid var(--hair);border-radius:99px;padding:3px}
+.seg button{border:0;background:transparent;font:inherit;font-weight:700;font-size:.74rem;letter-spacing:.04em;padding:6px 10px;border-radius:99px;color:var(--text2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--red);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:99px;padding:12px 20px;font-weight:700;font-size:.95rem;border:1.5px solid transparent;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn-ink{background:var(--ink);color:#fff;box-shadow:0 8px 20px -12px rgba(21,19,26,.7)}
+.btn-white{background:var(--white);color:var(--ink);border-color:var(--hair)}
+.btn-yellow{background:var(--yellow);color:var(--ink)}
+.btn-sm{padding:9px 16px;font-size:.88rem}
+.btn svg{width:18px;height:18px;flex:none}
+
+/* ── hero ── */
+.hero{position:relative;overflow:hidden;padding:56px 0 30px}
+.hero::before{content:"";position:absolute;inset:0;background:url(img/isla.webp) center 30%/cover no-repeat;opacity:.55;pointer-events:none}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(244,242,236,.35),rgba(244,242,236,.7) 60%,var(--beige));pointer-events:none}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1fr;gap:40px;align-items:center}
+@media(min-width:900px){.hero .wrap{grid-template-columns:1.05fr .95fr;gap:36px}.hero{padding:72px 0 40px}}
+
+.console{background:linear-gradient(180deg,var(--red0),var(--red) 55%,var(--red2));border-radius:30px;padding:16px;box-shadow:var(--sh-console)}
+.console-top{display:flex;align-items:center;gap:10px;padding:2px 6px 14px}
+.led{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#dff4ff 0,var(--led0) 22%,var(--led) 60%,#1a5ea3 100%);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.dot{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 -2px 3px rgba(0,0,0,.18)}
+.dot.g{background:var(--green)}.dot.y{background:#F5C24B}.dot.r{background:#B3151B}
+.console-tag{margin-left:auto;background:var(--ink);color:var(--yellow);font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;border-radius:14px}
+.slab{background:var(--slab);background-image:radial-gradient(#d7cfbf 1px,transparent 1.2px);background-size:9px 9px;border-radius:20px;padding:30px 28px 28px;box-shadow:inset 0 1px 0 #fff}
+.slab .eyebrow{color:var(--text3)}
+.slab h1{max-width:12ch}
+.slab .lead{margin-top:16px;font-size:1.05rem}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.freeline{margin-top:16px;font-size:.84rem;color:var(--text2);font-weight:600}
+.betanote{margin-top:14px;display:flex;gap:10px;align-items:flex-start;font-size:.86rem;color:var(--text2);background:#fff;border:1px solid var(--hair);border-radius:14px;padding:10px 12px}
+.betanote b{color:var(--ink)}
+.betanote .pill{flex:none;background:var(--yellow);color:var(--ink);font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border-radius:99px;margin-top:2px}
+
+.phones{position:relative;height:560px;display:none}
+@media(min-width:600px){.phones{display:block}}
+.phone{position:absolute;width:250px;aspect-ratio:540/1060;border-radius:36px;background:var(--ink);padding:9px;box-shadow:0 40px 70px -30px rgba(21,19,26,.55),0 0 0 1px rgba(255,255,255,.35)}
+.phone img{width:100%;height:100%;object-fit:cover;border-radius:28px}
+.phone.a{left:8%;top:0;z-index:2}
+.phone.b{right:4%;top:70px;transform:rotate(5deg);opacity:.96}
+@media(min-width:900px){.phone{width:262px}.phone.a{left:6%}.phone.b{right:0}}
+
+/* ── tiles ── */
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:22px}
+@media(min-width:760px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:#fff;border-radius:16px;padding:16px 16px 14px;box-shadow:var(--sh-card);border-top:4px solid var(--cblue)}
+.tile:nth-child(2){border-top-color:var(--cgreen)}.tile:nth-child(3){border-top-color:var(--cyellow)}.tile:nth-child(4){border-top-color:var(--cred)}
+.tile .num{font-size:1.8rem;line-height:1}
+.tile small{display:block;color:var(--text2);font-weight:600;font-size:.82rem;margin-top:6px}
+
+/* ── sections ── */
+section{padding:72px 0 8px;scroll-margin-top:70px}
+.sec-head{max-width:64ch;margin-bottom:34px}
+.sec-head .lead{margin-top:12px}
+.grid3{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:640px){.grid3{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){.grid3{grid-template-columns:repeat(3,1fr)}}
+.card{background:#fff;border-radius:20px;padding:24px 22px 22px;box-shadow:var(--sh-card);display:flex;flex-direction:column;gap:10px}
+.ico{width:46px;height:46px;border-radius:14px;background:var(--beige);display:grid;place-items:center;margin-bottom:6px}
+.ico svg{width:24px;height:24px;stroke:var(--ink);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.card p{color:var(--text2);font-size:.95rem}
+.card .chip{align-self:flex-start;background:var(--yellow);font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:99px}
+
+/* ── asia ── */
+.asia-panel{background:linear-gradient(160deg,var(--ink2),#141117);color:#fff;border-radius:30px;padding:40px 30px;display:grid;grid-template-columns:1fr;gap:30px;overflow:hidden;position:relative}
+@media(min-width:900px){.asia-panel{grid-template-columns:1.1fr .9fr;padding:56px 56px 0;align-items:end}}
+.asia-panel .eyebrow{color:var(--yellow)}
+.asia-panel .lead{color:#c9c2c6}
+.asia-panel .big{font-size:clamp(3rem,7vw,5rem);line-height:1;margin-top:28px}
+.asia-panel .bigl{color:#c9c2c6;font-weight:600;margin-top:6px}
+.asia-panel .txt{padding-bottom:40px}
+.asia-phone{justify-self:center;width:250px;aspect-ratio:540/1060;background:#000;border-radius:36px 36px 0 0;padding:9px 9px 0;box-shadow:0 0 0 1px rgba(255,255,255,.15);max-height:520px;overflow:hidden}
+.asia-phone img{border-radius:28px 28px 0 0;width:100%}
+.regions{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.regions span{font-family:var(--f-num);font-weight:700;font-size:.8rem;padding:6px 11px;border-radius:99px;color:#fff}
+.regions .en{background:#3D6FE0}.regions .jp{background:#E2231A}.regions .ko{background:#9B5DE5}.regions .cn{background:#F77F00}
+
+/* ── premium ── */
+.plans{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:760px){.plans{grid-template-columns:1fr 1fr}}
+.plan{background:#fff;border-radius:22px;padding:28px 26px;box-shadow:var(--sh-card);display:flex;flex-direction:column;gap:16px}
+.plan.pro{border:2px solid var(--ink)}
+.plan-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.price{display:flex;align-items:baseline;gap:4px}
+.price .num{font-size:2.2rem;line-height:1}
+.price small{color:var(--text2);font-weight:600}
+.plan ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.plan li{display:flex;gap:10px;color:var(--text2);font-size:.95rem}
+.plan li::before{content:"";flex:none;width:18px;height:18px;border-radius:50%;background:var(--green);margin-top:3px;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23000' stroke='none'/%3E%3Cpath d='M7 12.5l3.2 3.2L17 9' stroke='%23fff'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23000' stroke='none'/%3E%3Cpath d='M7 12.5l3.2 3.2L17 9' stroke='%23fff'/%3E%3C/svg%3E") center/contain no-repeat}
+.plan.pro li::before{background:var(--yellow)}
+.plan .note{color:var(--text3);font-size:.84rem;margin-top:auto}
+.plan-tag{background:var(--ink);color:var(--yellow);font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:6px 10px;border-radius:10px}
+
+/* ── faq ── */
+.faq{display:grid;gap:10px;max-width:760px}
+.faq details{background:#fff;border-radius:16px;box-shadow:var(--sh-card);padding:0 20px}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 0;font-weight:700}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--f-num);font-size:1.4rem;color:var(--red);flex:none;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--text2);padding:0 0 18px;max-width:62ch}
+
+/* ── cta ── */
+.cta{padding:80px 0 20px}
+.cta .console{max-width:820px;margin:0 auto}
+.cta .slab{text-align:left}
+.cta h2{max-width:16ch}
+
+/* ── footer ── */
+footer{margin-top:60px;border-top:1px solid var(--hair);padding:40px 0 48px;color:var(--text2);font-size:.9rem}
+.foot{display:grid;grid-template-columns:1fr;gap:28px}
+@media(min-width:760px){.foot{grid-template-columns:1.4fr 1fr 1fr 1fr}}
+.foot h4{margin:0 0 10px;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3)}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.foot a:hover{color:var(--ink)}
+.foot .brand{color:var(--ink)}
+.foot .story{margin-top:12px;max-width:40ch}
+.disclaimer{margin-top:36px;padding-top:20px;border-top:1px solid var(--hair2);font-size:.8rem;color:var(--text3);max-width:90ch}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#" aria-label="Talaiot">
+      <svg viewBox="12 12 76 76" aria-hidden="true"><defs><clipPath id="lg"><path d="M42 14 H58 Q62 14 63 19 L64 24 H66 Q78 24 79.8 37 L81 45.9 Q81.38 47 80.2 47 Q78.98 47 79.08 48.1 L79.7 51.4 Q79.8 52.5 81 52.5 L81.6 52.5 Q82.2 52.5 82.33 53.6 L85.4 74 Q87 86 73 86 H27 Q13 86 14.6 74 L17.67 53.6 Q17.8 52.5 19 52.5 L19.6 52.5 Q20.2 52.5 20.3 51.4 L20.92 48.1 Q21.02 47 19.8 47 Q18.62 47 19 45.9 L20.2 37 Q22 24 34 24 H36 L37 19 Q38 14 42 14 Z"/></clipPath></defs><g clip-path="url(#lg)"><rect width="100" height="100" fill="#F4EEE1"/><rect width="50" height="24" fill="#2F6FA8"/><rect x="50" width="50" height="24" fill="#E0B12F"/><rect y="24" width="40" height="8" fill="#E0B12F"/><rect x="40" y="24" width="20" height="8" fill="#C13B2E"/><rect x="60" y="24" width="40" height="8" fill="#4E8C4A"/><rect y="32" width="30" height="15" fill="#2F6FA8"/><rect x="30" y="32" width="20" height="15" fill="#4E8C4A"/><rect x="50" y="32" width="20" height="15" fill="#E0B12F"/><rect x="70" y="32" width="30" height="15" fill="#C13B2E"/><path d="M20.9 47 H79.1 L79.92 52.5 H58 V56 H42 V52.5 H20.08 Z" fill="#1A1A1D"/><g stroke="#1A1A1D" stroke-width="1.1" fill="none" opacity=".35"><path d="M0 32H100M0 24H100M40 24V32M60 24V32M30 32V47M50 32V47M70 32V47M50 0V24"/></g><g stroke="#E2DBCC" stroke-width="1.1" fill="none"><path d="M0 72H100M30 52.5V72M70 52.5V72"/></g><path d="M43.8 86 L44.5 75.6 Q44.7 73.8 46.4 73.7 L53.6 73.7 Q55.3 73.8 55.5 75.6 L56.2 86 Z" fill="#A99C86" opacity=".34"/></g><path d="M42 14 H58 Q62 14 63 19 L64 24 H66 Q78 24 79.8 37 L81 45.9 Q81.38 47 80.2 47 Q78.98 47 79.08 48.1 L79.7 51.4 Q79.8 52.5 81 52.5 L81.6 52.5 Q82.2 52.5 82.33 53.6 L85.4 74 Q87 86 73 86 H27 Q13 86 14.6 74 L17.67 53.6 Q17.8 52.5 19 52.5 L19.6 52.5 Q20.2 52.5 20.3 51.4 L20.92 48.1 Q21.02 47 19.8 47 Q18.62 47 19 45.9 L20.2 37 Q22 24 34 24 H36 L37 19 Q38 14 42 14 Z" fill="none" stroke="#1A1A1D" stroke-width="2.4" stroke-linejoin="round"/><path d="M36 24 H64" stroke="#1A1A1D" stroke-width="1.6" stroke-linecap="round"/><rect x="45.5" y="16.6" width="9" height="4.2" rx="1.5" fill="#F6F0E2" stroke="#1A1A1D" stroke-width="1.2"/><circle cx="50" cy="51" r="11.8" fill="#F4EEE1"/><circle cx="50" cy="51" r="10.6" fill="none" stroke="#1A1A1D" stroke-width="2.6"/><circle cx="50" cy="51" r="7" fill="#1A1A1D"/><circle cx="47.4" cy="48.4" r="1.8" fill="#fff"/></svg>
+      <span>Talaiot</span>
+    </a>
+    <nav class="nav-links" aria-label="Secciones">
+      <a href="#funciones" data-i="nav.features">Funciones</a>
+      <a href="#asia" data-i="nav.asia">Asia</a>
+      <a href="#premium" data-i="nav.premium">Premium</a>
+      <a href="#preguntas" data-i="nav.faq">Preguntas</a>
+    </nav>
+    <div class="nav-right">
+      <div class="seg" role="group" aria-label="Idioma">
+        <button type="button" data-lang="es" aria-pressed="true">ES</button>
+        <button type="button" data-lang="ca" aria-pressed="false">CAT</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="btn btn-ink btn-sm" href="#descargar" data-i="nav.cta">Descargar</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="inicio">
+  <div class="wrap">
+    <div class="console">
+      <div class="console-top">
+        <span class="led" aria-hidden="true"></span>
+        <span class="dot g" aria-hidden="true"></span><span class="dot y" aria-hidden="true"></span><span class="dot r" aria-hidden="true"></span>
+        <span class="console-tag" data-i="hero.tag">iPhone · Android</span>
+      </div>
+      <div class="slab">
+        <p class="eyebrow" data-i="hero.eyebrow">Escáner de cartas TCG</p>
+        <h1 data-i="hero.h1">Escanea tus cartas. Mira lo que valen.</h1>
+        <p class="lead" data-i="hero.sub">Apunta con la cámara y la carta se reconoce sola, también si es japonesa, coreana o china. Precio real, colección organizada y comunidad. Sin anuncios.</p>
+        <div class="ctas" id="descargar">
+          <a class="btn btn-ink" data-store="ios" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.8zM14.2 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.8-1.4z"/></svg><span data-i="hero.ios">Descargar en el App Store</span></a>
+          <a class="btn btn-white" data-store="android" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 3.5v17c0 .4.4.7.8.5l9.6-8.5L4.8 3c-.4-.2-.8.1-.8.5zm12 8.2L6.6 4.4l7.6 7.6-7.6 7.6 9.4-7.3c.5-.4.5-1.1 0-1.6zm1.4 1.1 2.6-1.5c.6-.4.6-1.2 0-1.6l-2.6-1.5-2.3 2.3 2.3 2.3z"/></svg><span data-i="hero.android">Disponible en Google Play</span></a>
+        </div>
+        <div class="betanote" id="betanote" hidden>
+          <span class="pill">Beta</span>
+          <span><b data-i="hero.betaB">Talaiot está en pruebas.</b> <span data-i="hero.betaT">Las tiendas abren pronto. Mientras tanto, los botones te llevan al formulario para entrar en la beta.</span></span>
+        </div>
+        <p class="freeline" data-i="hero.free">Gratis · sin anuncios · sin cuenta obligatoria</p>
+      </div>
+    </div>
+    <div class="phones" aria-hidden="true">
+      <div class="phone a"><img src="img/coleccion.webp" alt="" width="540" height="1060"></div>
+      <div class="phone b"><img src="img/ficha.webp" alt="" width="540" height="1060"></div>
+    </div>
+  </div>
+  <div class="wrap" style="display:block">
+    <div class="tiles">
+      <div class="tile"><span class="num">73.000+</span><small data-i="t1">cartas en el catálogo</small></div>
+      <div class="tile"><span class="num">4</span><small data-i="t2">regiones: EN · JP · KO · CN</small></div>
+      <div class="tile"><span class="num">3</span><small data-i="t3">gradeadoras: PSA · BGS · CGC</small></div>
+      <div class="tile"><span class="num">0</span><small data-i="t4">fotos subidas a la nube</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="funciones">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-i="f.eyebrow">Funciones</p>
+      <h2 data-i="f.h2">Todo lo que hace, sin letra pequeña</h2>
+    </div>
+    <div class="grid3">
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><rect x="8" y="7" width="8" height="10" rx="1.5"/></svg></div><h3 data-i="f1h">Escáner en tu móvil</h3><p data-i="f1p">Lee el número y el código de set impresos; si no se dejan leer, compara la ilustración con el catálogo. Todo ocurre dentro del teléfono: la foto no sale de él.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M20 12l-8 8-8-8V4h8z"/><circle cx="9" cy="8" r="1.5"/></svg></div><h3 data-i="f2h">Precio real, en € y en $</h3><p data-i="f2p">Cardmarket y TCGplayer, con conversión automática y precio por tirada: normal, reverse, holo…</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg></div><h3 data-i="f3h">Japón, Corea y China</h3><p data-i="f3p">Catálogo propio con el nombre nativo de cada carta, para que una japonesa o una coreana se reconozca igual que una inglesa.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5M3 17l9 5 9-5"/></svg></div><h3 data-i="f4h">Tu colección, organizada</h3><p data-i="f4p">Valor total al día, progreso por set y carpetas para ordenarla como quieras.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4.5-6.2"/></svg></div><h3 data-i="f5h">Comunidad, gratis</h3><p data-i="f5p">Perfil de coleccionista, colecciones públicas, seguir a quien quieras y chat privado. Puedes mandar una carta dentro de un mensaje.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div><h3 data-i="f6h">La hoja entera del archivador</h3><p data-i="f6p">Una foto a una página de 3×3 y las nueve cartas entran a la vez.</p><span class="chip">Premium</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="asia">
+  <div class="wrap">
+    <div class="asia-panel">
+      <div class="txt">
+        <p class="eyebrow" data-i="a.eyebrow">El catálogo</p>
+        <h2 data-i="a.h2">Hecha para las cartas que las otras apps no ven</h2>
+        <p class="lead" style="margin-top:16px" data-i="a.p1">La mayoría de escáneres están pensados para el mercado americano: catálogo en inglés y precios en dólares. Si coleccionas japonés, coreano o chino, no te sirven.</p>
+        <p class="lead" style="margin-top:12px" data-i="a.p2">Talaiot tiene catálogo propio de más de 73.000 cartas en cuatro regiones, con el nombre nativo de cada una escrito y comprobado. Es la parte que más ha costado, y la que marca la diferencia.</p>
+        <div class="big num">73.000+</div>
+        <p class="bigl" data-i="a.bigl">cartas · inglés, japonés, coreano y chino</p>
+        <div class="regions" aria-hidden="true"><span class="en">EN</span><span class="jp">JP</span><span class="ko">KO</span><span class="cn">CN</span></div>
+      </div>
+      <div class="asia-phone" aria-hidden="true"><img src="img/coleccion.webp" alt="" width="540" height="1060"></div>
+    </div>
+  </div>
+</section>
+
+<section id="premium">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Premium</p>
+      <h2 data-i="p.h2">Lo importante es gratis. Lo de coleccionista serio, 2,99 € al mes.</h2>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-head"><h3 data-i="p.free">Gratis</h3><div class="price"><span class="num">0 €</span></div></div>
+        <ul>
+          <li data-i="pf1">Escáner, carta a carta o varias a la vez</li>
+          <li data-i="pf2">Todos los precios de mercado, en euros y en dólares</li>
+          <li data-i="pf3">Catálogo completo y colección sin límite</li>
+          <li data-i="pf4">Perfil, colecciones públicas y chat</li>
+          <li data-i="pf5">Sin anuncios</li>
+        </ul>
+        <p class="note" data-i="p.freenote">Y se puede usar sin cuenta.</p>
+      </div>
+      <div class="plan pro">
+        <div class="plan-head"><h3>Premium <span class="plan-tag" data-i="p.tag">Gradeo</span></h3><div class="price"><span class="num">2,99 €</span><small data-i="p.per">/ mes</small></div></div>
+        <ul>
+          <li data-i="pp1">Valor gradeado PSA, BGS y CGC de cualquier carta</li>
+          <li data-i="pp2">Gráficas de evolución de tu colección y del mercado</li>
+          <li data-i="pp3">Alertas cuando una carta de tu lista de deseos baja de precio</li>
+          <li data-i="pp4">La hoja entera del archivador de una foto: 2×2, 3×3 o 4×4</li>
+          <li data-i="pp5">También en cartas japonesas y asiáticas</li>
+        </ul>
+        <p class="note" data-i="p.pronote">Sin permanencia. Se cancela desde la tienda.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="preguntas">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-i="q.eyebrow">Preguntas</p>
+      <h2 data-i="q.h2">Lo que suelen preguntar</h2>
+    </div>
+    <div class="faq">
+      <details><summary data-i="q1">¿Es gratis?</summary><p data-i="a1">Sí. Escanear, ver precios, organizar la colección y toda la parte social son gratis y sin anuncios. Premium añade los precios gradeados, las gráficas, las alertas y el escaneo de la hoja entera.</p></details>
+      <details><summary data-i="q2">¿Hace falta cuenta?</summary><p data-i="a2">No. Puedes entrar como invitado y usarla. La cuenta sirve para guardar la colección en la nube y para la parte social.</p></details>
+      <details><summary data-i="q3">¿Qué pasa con mis fotos?</summary><p data-i="a3">Nada: el reconocimiento se hace en tu teléfono. Las imágenes de la cámara no se suben a ningún servidor.</p></details>
+      <details><summary data-i="q4">¿De dónde salen los precios?</summary><p data-i="a4">De Cardmarket (euros) y TCGplayer (dólares), actualizados de forma continua. Los gradeados, de ventas reales por nota. Son orientativos: el mercado manda.</p></details>
+      <details><summary data-i="q5">¿Reconoce cartas japonesas?</summary><p data-i="a5">Sí, y coreanas y chinas. Lee el código de set y el número y, si no se ven, compara la ilustración. Las cartas asiáticas tienen su nombre nativo en el catálogo.</p></details>
+      <details><summary data-i="q6">¿Talaiot es de Pokémon?</summary><p data-i="a6">No. Talaiot™ es una app independiente hecha por un desarrollador de Mataró. No está afiliada, asociada ni patrocinada por The Pokémon Company, Nintendo, Creatures ni Game Freak.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <div class="console">
+      <div class="console-top"><span class="led" aria-hidden="true"></span><span class="dot g" aria-hidden="true"></span><span class="dot y" aria-hidden="true"></span><span class="dot r" aria-hidden="true"></span></div>
+      <div class="slab">
+        <h2 data-i="c.h2">Empieza con lo que tengas en la mesa.</h2>
+        <p class="lead" style="margin-top:12px" data-i="c.p">Una carta suelta o el archivador entero.</p>
+        <div class="ctas">
+          <a class="btn btn-ink" data-store="ios" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.8zM14.2 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.8-1.4z"/></svg><span data-i="hero.ios">Descargar en el App Store</span></a>
+          <a class="btn btn-white" data-store="android" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 3.5v17c0 .4.4.7.8.5l9.6-8.5L4.8 3c-.4-.2-.8.1-.8.5zm12 8.2L6.6 4.4l7.6 7.6-7.6 7.6 9.4-7.3c.5-.4.5-1.1 0-1.6zm1.4 1.1 2.6-1.5c.6-.4.6-1.2 0-1.6l-2.6-1.5-2.3 2.3 2.3 2.3z"/></svg><span data-i="hero.android">Disponible en Google Play</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="brand"><span>Talaiot</span></div>
+        <p class="story" data-i="ft.story">Un talaiot es una torre de piedra seca de hace tres mil años, levantada piedra a piedra. Una colección se construye igual.</p>
+        <p style="margin-top:12px" data-i="ft.made">Hecha en Mataró.</p>
+      </div>
+      <div>
+        <h4>App</h4>
+        <ul>
+          <li><a href="#funciones" data-i="nav.features">Funciones</a></li>
+          <li><a href="#premium">Premium</a></li>
+          <li><a href="#preguntas" data-i="nav.faq">Preguntas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a data-legal="privacy" href="https://reiggu.github.io/talaiot-legal/privacidad.html" data-i="ft.privacy">Privacidad</a></li>
+          <li><a data-legal="terms" href="https://reiggu.github.io/talaiot-legal/terminos.html" data-i="ft.terms">Términos de uso</a></li>
+          <li><a data-legal="delete" href="https://reiggu.github.io/talaiot-legal/borrar-cuenta.html" data-i="ft.delete">Borrar tu cuenta</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i="ft.contact">Contacto</h4>
+        <ul>
+          <li><a href="mailto:talaiot.tcg@gmail.com">talaiot.tcg@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/talaiot.tcg/" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/@talaiot.tcg" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="disclaimer" data-i="ft.disc">Talaiot™ es una herramienta independiente para coleccionistas. No está afiliada, asociada ni patrocinada por The Pokémon Company, Nintendo, Creatures, Game Freak ni Wizards of the Coast. Todas las marcas y nombres de productos pertenecen a sus respectivos propietarios y se usan solo con fines identificativos. Los precios provienen de fuentes públicas de mercado y son orientativos. © 2026 Talaiot.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ── Enlaces de descarga. Mientras la app esté en pruebas (BETA=true) los botones llevan al formulario
+  //    de la beta; al publicar, poner BETA=false y las URLs de las fichas de las tiendas.
+  var BETA = true;
+  var LINKS = {
+    ios: 'https://apps.apple.com/app/id6810394795',
+    android: 'https://play.google.com/store/apps/details?id=com.talaiot.app',
+    beta: { es: 'https://forms.gle/mv7LiHqUagYhwnBN9', ca: 'https://forms.gle/mv7LiHqUagYhwnBN9', en: 'https://forms.gle/AzsAHKNuNaowaS629' }
+  };
+  var LEGAL = {
+    es: { privacy: 'privacidad', terms: 'terminos', delete: 'borrar-cuenta' },
+    ca: { privacy: 'privacitat', terms: 'termes', delete: 'esborrar-compte' },
+    en: { privacy: 'privacy', terms: 'terms', delete: 'delete-account' }
+  };
+  var T = {
+    es: {
+      title: 'Talaiot · Escáner de cartas TCG',
+      'nav.features': 'Funciones', 'nav.asia': 'Asia', 'nav.premium': 'Premium', 'nav.faq': 'Preguntas', 'nav.cta': 'Descargar',
+      'hero.tag': 'iPhone · Android', 'hero.eyebrow': 'Escáner de cartas TCG', 'hero.h1': 'Escanea tus cartas. Mira lo que valen.',
+      'hero.sub': 'Apunta con la cámara y la carta se reconoce sola, también si es japonesa, coreana o china. Precio real, colección organizada y comunidad. Sin anuncios.',
+      'hero.ios': 'Descargar en el App Store', 'hero.android': 'Disponible en Google Play',
+      'hero.iosBeta': 'Probar la beta en iPhone', 'hero.androidBeta': 'Probar la beta en Android',
+      'hero.betaB': 'Talaiot está en pruebas.', 'hero.betaT': 'Las tiendas abren pronto. Mientras tanto, los botones te llevan al formulario para entrar en la beta.',
+      'hero.free': 'Gratis · sin anuncios · sin cuenta obligatoria',
+      t1: 'cartas en el catálogo', t2: 'regiones: EN · JP · KO · CN', t3: 'gradeadoras: PSA · BGS · CGC', t4: 'fotos subidas a la nube',
+      'f.eyebrow': 'Funciones', 'f.h2': 'Todo lo que hace, sin letra pequeña',
+      f1h: 'Escáner en tu móvil', f1p: 'Lee el número y el código de set impresos; si no se dejan leer, compara la ilustración con el catálogo. Todo ocurre dentro del teléfono: la foto no sale de él.',
+      f2h: 'Precio real, en € y en $', f2p: 'Cardmarket y TCGplayer, con conversión automática y precio por tirada: normal, reverse, holo…',
+      f3h: 'Japón, Corea y China', f3p: 'Catálogo propio con el nombre nativo de cada carta, para que una japonesa o una coreana se reconozca igual que una inglesa.',
+      f4h: 'Tu colección, organizada', f4p: 'Valor total al día, progreso por set y carpetas para ordenarla como quieras.',
+      f5h: 'Comunidad, gratis', f5p: 'Perfil de coleccionista, colecciones públicas, seguir a quien quieras y chat privado. Puedes mandar una carta dentro de un mensaje.',
+      f6h: 'La hoja entera del archivador', f6p: 'Una foto a una página de 3×3 y las nueve cartas entran a la vez.',
+      'a.eyebrow': 'El catálogo', 'a.h2': 'Hecha para las cartas que las otras apps no ven',
+      'a.p1': 'La mayoría de escáneres están pensados para el mercado americano: catálogo en inglés y precios en dólares. Si coleccionas japonés, coreano o chino, no te sirven.',
+      'a.p2': 'Talaiot tiene catálogo propio de más de 73.000 cartas en cuatro regiones, con el nombre nativo de cada una escrito y comprobado. Es la parte que más ha costado, y la que marca la diferencia.',
+      'a.bigl': 'cartas · inglés, japonés, coreano y chino',
+      'p.h2': 'Lo importante es gratis. Lo de coleccionista serio, 2,99 € al mes.', 'p.free': 'Gratis', 'p.tag': 'Gradeo', 'p.per': '/ mes',
+      pf1: 'Escáner, carta a carta o varias a la vez', pf2: 'Todos los precios de mercado, en euros y en dólares', pf3: 'Catálogo completo y colección sin límite', pf4: 'Perfil, colecciones públicas y chat', pf5: 'Sin anuncios', 'p.freenote': 'Y se puede usar sin cuenta.',
+      pp1: 'Valor gradeado PSA, BGS y CGC de cualquier carta', pp2: 'Gráficas de evolución de tu colección y del mercado', pp3: 'Alertas cuando una carta de tu lista de deseos baja de precio', pp4: 'La hoja entera del archivador de una foto: 2×2, 3×3 o 4×4', pp5: 'También en cartas japonesas y asiáticas', 'p.pronote': 'Sin permanencia. Se cancela desde la tienda.',
+      'q.eyebrow': 'Preguntas', 'q.h2': 'Lo que suelen preguntar',
+      q1: '¿Es gratis?', a1: 'Sí. Escanear, ver precios, organizar la colección y toda la parte social son gratis y sin anuncios. Premium añade los precios gradeados, las gráficas, las alertas y el escaneo de la hoja entera.',
+      q2: '¿Hace falta cuenta?', a2: 'No. Puedes entrar como invitado y usarla. La cuenta sirve para guardar la colección en la nube y para la parte social.',
+      q3: '¿Qué pasa con mis fotos?', a3: 'Nada: el reconocimiento se hace en tu teléfono. Las imágenes de la cámara no se suben a ningún servidor.',
+      q4: '¿De dónde salen los precios?', a4: 'De Cardmarket (euros) y TCGplayer (dólares), actualizados de forma continua. Los gradeados, de ventas reales por nota. Son orientativos: el mercado manda.',
+      q5: '¿Reconoce cartas japonesas?', a5: 'Sí, y coreanas y chinas. Lee el código de set y el número y, si no se ven, compara la ilustración. Las cartas asiáticas tienen su nombre nativo en el catálogo.',
+      q6: '¿Talaiot es de Pokémon?', a6: 'No. Talaiot™ es una app independiente hecha por un desarrollador de Mataró. No está afiliada, asociada ni patrocinada por The Pokémon Company, Nintendo, Creatures ni Game Freak.',
+      'c.h2': 'Empieza con lo que tengas en la mesa.', 'c.p': 'Una carta suelta o el archivador entero.',
+      'ft.story': 'Un talaiot es una torre de piedra seca de hace tres mil años, levantada piedra a piedra. Una colección se construye igual.', 'ft.made': 'Hecha en Mataró.',
+      'ft.privacy': 'Privacidad', 'ft.terms': 'Términos de uso', 'ft.delete': 'Borrar tu cuenta', 'ft.contact': 'Contacto',
+      'ft.disc': 'Talaiot™ es una herramienta independiente para coleccionistas. No está afiliada, asociada ni patrocinada por The Pokémon Company, Nintendo, Creatures, Game Freak ni Wizards of the Coast. Todas las marcas y nombres de productos pertenecen a sus respectivos propietarios y se usan solo con fines identificativos. Los precios provienen de fuentes públicas de mercado y son orientativos. © 2026 Talaiot.'
+    },
+    ca: {
+      title: 'Talaiot · Escàner de cartes TCG',
+      'nav.features': 'Funcions', 'nav.asia': 'Àsia', 'nav.premium': 'Premium', 'nav.faq': 'Preguntes', 'nav.cta': 'Descarregar',
+      'hero.tag': 'iPhone · Android', 'hero.eyebrow': 'Escàner de cartes TCG', 'hero.h1': 'Escaneja les teves cartes. Mira què valen.',
+      'hero.sub': 'Apunta amb la càmera i la carta es reconeix sola, també si és japonesa, coreana o xinesa. Preu real, col·lecció ordenada i comunitat. Sense anuncis.',
+      'hero.ios': "Descarrega-la a l'App Store", 'hero.android': 'Disponible a Google Play',
+      'hero.iosBeta': 'Provar la beta a iPhone', 'hero.androidBeta': 'Provar la beta a Android',
+      'hero.betaB': 'Talaiot està en proves.', 'hero.betaT': 'Les botigues obren aviat. Mentrestant, els botons et porten al formulari per entrar a la beta.',
+      'hero.free': 'Gratis · sense anuncis · sense compte obligatori',
+      t1: 'cartes al catàleg', t2: 'regions: EN · JP · KO · CN', t3: 'gradejadores: PSA · BGS · CGC', t4: 'fotos pujades al núvol',
+      'f.eyebrow': 'Funcions', 'f.h2': 'Tot el que fa, sense lletra petita',
+      f1h: 'Escàner al teu mòbil', f1p: "Llegeix el número i el codi de set impresos; si no es deixen llegir, compara la il·lustració amb el catàleg. Tot passa dins del telèfon: la foto no en surt.",
+      f2h: 'Preu real, en € i en $', f2p: 'Cardmarket i TCGplayer, amb conversió automàtica i preu per tirada: normal, reverse, holo…',
+      f3h: 'Japó, Corea i Xina', f3p: 'Catàleg propi amb el nom natiu de cada carta, perquè una japonesa o una coreana es reconegui igual que una anglesa.',
+      f4h: 'La teva col·lecció, ordenada', f4p: 'Valor total al dia, progrés per set i carpetes per ordenar-la com vulguis.',
+      f5h: 'Comunitat, gratis', f5p: 'Perfil de col·leccionista, col·leccions públiques, seguir qui vulguis i xat privat. Pots enviar una carta dins d\'un missatge.',
+      f6h: 'El full sencer de l\'arxivador', f6p: 'Una foto a una pàgina de 3×3 i les nou cartes entren alhora.',
+      'a.eyebrow': 'El catàleg', 'a.h2': 'Feta per a les cartes que les altres apps no veuen',
+      'a.p1': 'La majoria d\'escàners estan pensats per al mercat americà: catàleg en anglès i preus en dòlars. Si col·lecciones japonès, coreà o xinès, no et serveixen.',
+      'a.p2': 'Talaiot té catàleg propi de més de 73.000 cartes en quatre regions, amb el nom natiu de cadascuna escrit i comprovat. És la part que més ha costat, i la que marca la diferència.',
+      'a.bigl': 'cartes · anglès, japonès, coreà i xinès',
+      'p.h2': 'L\'important és gratis. El de col·leccionista seriós, 2,99 € al mes.', 'p.free': 'Gratis', 'p.tag': 'Gradeig', 'p.per': '/ mes',
+      pf1: 'Escàner, carta a carta o diverses alhora', pf2: 'Tots els preus de mercat, en euros i en dòlars', pf3: 'Catàleg complet i col·lecció sense límit', pf4: 'Perfil, col·leccions públiques i xat', pf5: 'Sense anuncis', 'p.freenote': 'I es pot fer servir sense compte.',
+      pp1: 'Valor gradejat PSA, BGS i CGC de qualsevol carta', pp2: 'Gràfiques d\'evolució de la teva col·lecció i del mercat', pp3: 'Avisos quan una carta de la teva llista de desitjos baixa de preu', pp4: 'El full sencer de l\'arxivador d\'una foto: 2×2, 3×3 o 4×4', pp5: 'També en cartes japoneses i asiàtiques', 'p.pronote': 'Sense permanència. Es cancel·la des de la botiga.',
+      'q.eyebrow': 'Preguntes', 'q.h2': 'El que solen preguntar',
+      q1: 'És gratis?', a1: 'Sí. Escanejar, veure preus, ordenar la col·lecció i tota la part social són gratis i sense anuncis. Premium afegeix els preus gradejats, les gràfiques, els avisos i l\'escaneig del full sencer.',
+      q2: 'Cal compte?', a2: 'No. Pots entrar com a convidat i fer-la servir. El compte serveix per guardar la col·lecció al núvol i per a la part social.',
+      q3: 'Què passa amb les meves fotos?', a3: 'Res: el reconeixement es fa al teu telèfon. Les imatges de la càmera no es pugen a cap servidor.',
+      q4: 'D\'on surten els preus?', a4: 'De Cardmarket (euros) i TCGplayer (dòlars), actualitzats de manera contínua. Els gradejats, de vendes reals per nota. Són orientatius: el mercat mana.',
+      q5: 'Reconeix cartes japoneses?', a5: 'Sí, i coreanes i xineses. Llegeix el codi de set i el número i, si no es veuen, compara la il·lustració. Les cartes asiàtiques tenen el seu nom natiu al catàleg.',
+      q6: 'Talaiot és de Pokémon?', a6: 'No. Talaiot™ és una app independent feta per un desenvolupador de Mataró. No està afiliada, associada ni patrocinada per The Pokémon Company, Nintendo, Creatures ni Game Freak.',
+      'c.h2': 'Comença amb el que tinguis a la taula.', 'c.p': 'Una carta solta o l\'arxivador sencer.',
+      'ft.story': 'Un talaiot és una torre de pedra seca de fa tres mil anys, aixecada pedra a pedra. Una col·lecció es construeix igual.', 'ft.made': 'Feta a Mataró.',
+      'ft.privacy': 'Privacitat', 'ft.terms': 'Termes d\'ús', 'ft.delete': 'Esborrar el teu compte', 'ft.contact': 'Contacte',
+      'ft.disc': 'Talaiot™ és una eina independent per a col·leccionistes. No està afiliada, associada ni patrocinada per The Pokémon Company, Nintendo, Creatures, Game Freak ni Wizards of the Coast. Totes les marques i noms de productes pertanyen als seus propietaris i s\'usen només amb finalitats identificatives. Els preus provenen de fonts públiques de mercat i són orientatius. © 2026 Talaiot.'
+    },
+    en: {
+      title: 'Talaiot · TCG Card Scanner',
+      'nav.features': 'Features', 'nav.asia': 'Asia', 'nav.premium': 'Premium', 'nav.faq': 'FAQ', 'nav.cta': 'Download',
+      'hero.tag': 'iPhone · Android', 'hero.eyebrow': 'TCG card scanner', 'hero.h1': 'Scan your cards. See what they\'re worth.',
+      'hero.sub': 'Point the camera and the card is recognised on its own, Japanese, Korean and Chinese ones included. Real prices, an organised collection and a community. No ads.',
+      'hero.ios': 'Download on the App Store', 'hero.android': 'Get it on Google Play',
+      'hero.iosBeta': 'Try the beta on iPhone', 'hero.androidBeta': 'Try the beta on Android',
+      'hero.betaB': 'Talaiot is in beta.', 'hero.betaT': 'The stores open soon. Until then, the buttons take you to the sign-up form for the beta.',
+      'hero.free': 'Free · no ads · no account required',
+      t1: 'cards in the catalogue', t2: 'regions: EN · JP · KO · CN', t3: 'graders: PSA · BGS · CGC', t4: 'photos uploaded to the cloud',
+      'f.eyebrow': 'Features', 'f.h2': 'Everything it does, no fine print',
+      f1h: 'Scanner on your phone', f1p: 'Reads the printed number and set code; when they can\'t be read, it matches the artwork against the catalogue. Everything happens on the phone: the photo never leaves it.',
+      f2h: 'Real prices, in € and $', f2p: 'Cardmarket and TCGplayer, with automatic conversion and a price per printing: normal, reverse, holo…',
+      f3h: 'Japan, Korea and China', f3p: 'Our own catalogue with each card\'s native name, so a Japanese or Korean card is recognised just like an English one.',
+      f4h: 'Your collection, organised', f4p: 'Total value kept up to date, progress per set and folders to sort it however you like.',
+      f5h: 'Community, free', f5p: 'Collector profile, public collections, follow anyone and private chat. You can send a card inside a message.',
+      f6h: 'A whole binder page', f6p: 'One photo of a 3×3 page and all nine cards go in at once.',
+      'a.eyebrow': 'The catalogue', 'a.h2': 'Built for the cards other apps can\'t see',
+      'a.p1': 'Most scanners are built for the American market: English catalogue, dollar prices. If you collect Japanese, Korean or Chinese, they don\'t work for you.',
+      'a.p2': 'Talaiot has its own catalogue of more than 73,000 cards across four regions, with each card\'s native name written and verified. It\'s the part that took the longest, and the one that makes the difference.',
+      'a.bigl': 'cards · English, Japanese, Korean and Chinese',
+      'p.h2': 'What matters is free. The serious-collector part, €2.99 a month.', 'p.free': 'Free', 'p.tag': 'Graded', 'p.per': '/ month',
+      pf1: 'Scanner, one card at a time or several at once', pf2: 'All market prices, in euros and dollars', pf3: 'Full catalogue and unlimited collection', pf4: 'Profile, public collections and chat', pf5: 'No ads', 'p.freenote': 'And it works without an account.',
+      pp1: 'PSA, BGS and CGC graded value of any card', pp2: 'Charts of your collection and the market over time', pp3: 'Alerts when a wishlist card drops in price', pp4: 'A whole binder page from one photo: 2×2, 3×3 or 4×4', pp5: 'Japanese and Asian cards too', 'p.pronote': 'No commitment. Cancel from the store.',
+      'q.eyebrow': 'FAQ', 'q.h2': 'What people ask',
+      q1: 'Is it free?', a1: 'Yes. Scanning, prices, organising your collection and the whole social side are free and ad-free. Premium adds graded prices, charts, alerts and whole-page scanning.',
+      q2: 'Do I need an account?', a2: 'No. You can continue as a guest and use it. An account saves your collection to the cloud and unlocks the social side.',
+      q3: 'What happens to my photos?', a3: 'Nothing: recognition runs on your phone. Camera images are never uploaded to a server.',
+      q4: 'Where do the prices come from?', a4: 'Cardmarket (euros) and TCGplayer (dollars), refreshed continuously. Graded prices come from real sales per grade. They\'re a guide: the market rules.',
+      q5: 'Does it recognise Japanese cards?', a5: 'Yes, plus Korean and Chinese. It reads the set code and number and, when they can\'t be seen, matches the artwork. Asian cards carry their native name in the catalogue.',
+      q6: 'Is Talaiot affiliated with Pokémon?', a6: 'No. Talaiot™ is an independent app made by a solo developer in Mataró, Spain. It is not affiliated with, associated with or sponsored by The Pokémon Company, Nintendo, Creatures or Game Freak.',
+      'c.h2': 'Start with whatever is on the table.', 'c.p': 'A single card or the whole binder.',
+      'ft.story': 'A talaiot is a dry-stone tower from three thousand years ago, raised stone by stone. A collection is built the same way.', 'ft.made': 'Made in Mataró, Spain.',
+      'ft.privacy': 'Privacy', 'ft.terms': 'Terms of use', 'ft.delete': 'Delete your account', 'ft.contact': 'Contact',
+      'ft.disc': 'Talaiot™ is an independent tool for collectors. It is not affiliated with, associated with or sponsored by The Pokémon Company, Nintendo, Creatures, Game Freak or Wizards of the Coast. All trademarks and product names belong to their respective owners and are used for identification only. Prices come from public market sources and are indicative. © 2026 Talaiot.'
+    }
+  };
+
+  function pick(){
+    var q = new URLSearchParams(location.search).get('lang');
+    if (q && T[q]) return q;
+    try { var s = localStorage.getItem('talaiot-lang'); if (s && T[s]) return s; } catch(e){}
+    var n = (navigator.language || 'es').toLowerCase();
+    if (n.indexOf('ca') === 0) return 'ca';
+    if (n.indexOf('es') === 0) return 'es';
+    return 'en';
+  }
+  function apply(lang){
+    var t = T[lang];
+    document.documentElement.lang = lang;
+    document.title = t.title;
+    document.querySelectorAll('[data-i]').forEach(function(el){ var k = el.getAttribute('data-i'); if (t[k]) el.textContent = t[k]; });
+    document.querySelectorAll('[data-lang]').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false'); });
+    document.querySelectorAll('[data-legal]').forEach(function(a){ a.href = 'https://reiggu.github.io/talaiot-legal/' + LEGAL[lang][a.getAttribute('data-legal')] + '.html'; });
+    document.querySelectorAll('[data-store]').forEach(function(a){
+      var s = a.getAttribute('data-store'), span = a.querySelector('span');
+      if (BETA) { a.href = LINKS.beta[lang]; a.target = '_blank'; a.rel = 'noopener'; span.textContent = t[s === 'ios' ? 'hero.iosBeta' : 'hero.androidBeta']; }
+      else { a.href = LINKS[s]; a.removeAttribute('target'); span.textContent = t[s === 'ios' ? 'hero.ios' : 'hero.android']; }
+    });
+    var bn = document.getElementById('betanote'); if (bn) bn.hidden = !BETA;
+    var cta = document.querySelector('.nav [data-i="nav.cta"]'); if (cta && BETA) cta.textContent = lang === 'en' ? 'Try the beta' : (lang === 'ca' ? 'Provar la beta' : 'Probar la beta');
+    try { localStorage.setItem('talaiot-lang', lang); } catch(e){}
+  }
+  document.querySelectorAll('[data-lang]').forEach(function(b){ b.addEventListener('click', function(){ apply(b.getAttribute('data-lang')); }); });
+  apply(pick());
+})();
+</script>
+</body>
+</html>
