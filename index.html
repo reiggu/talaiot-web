@@ -508,9 +508,9 @@ footer{border-top:1px solid rgba(255,255,255,.08);padding:56px 0 48px;color:#a9a
       <div>
         <h4>Legal</h4>
         <ul>
-          <li><a data-legal="privacy" href="https://reiggu.github.io/talaiot-legal/privacidad.html" data-i="ft.privacy">Privacidad</a></li>
-          <li><a data-legal="terms" href="https://reiggu.github.io/talaiot-legal/terminos.html" data-i="ft.terms">Términos de uso</a></li>
-          <li><a data-legal="delete" href="https://reiggu.github.io/talaiot-legal/borrar-cuenta.html" data-i="ft.delete">Borrar tu cuenta</a></li>
+          <li><a data-legal="privacy" href="legal/privacidad.html" data-i="ft.privacy">Privacidad</a></li>
+          <li><a data-legal="terms" href="legal/terminos.html" data-i="ft.terms">Términos de uso</a></li>
+          <li><a data-legal="delete" href="legal/borrar-cuenta.html" data-i="ft.delete">Borrar tu cuenta</a></li>
         </ul>
       </div>
       <div>
@@ -692,7 +692,7 @@ footer{border-top:1px solid rgba(255,255,255,.08);padding:56px 0 48px;color:#a9a
     document.querySelectorAll('[data-i]').forEach(function(el){ var k = el.getAttribute('data-i'); if (t[k]) el.textContent = t[k]; });
     var fl = document.querySelector('.freeline'); if (fl) fl.innerHTML = t['hero.free'].split(' · ').map(function(x){ return '<span>' + x + '</span>'; }).join('');
     document.querySelectorAll('[data-lang]').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false'); });
-    document.querySelectorAll('[data-legal]').forEach(function(a){ a.href = 'https://reiggu.github.io/talaiot-legal/' + LEGAL[lang][a.getAttribute('data-legal')] + '.html'; });
+    document.querySelectorAll('[data-legal]').forEach(function(a){ a.href = 'legal/' + LEGAL[lang][a.getAttribute('data-legal')] + '.html'; });
     document.querySelectorAll('[data-store]').forEach(function(a){
       var s = a.getAttribute('data-store'), span = a.querySelector('span');
       if (BETA) { a.href = LINKS.beta[lang]; a.target = '_blank'; a.rel = 'noopener'; span.textContent = t[s === 'ios' ? 'hero.iosBeta' : 'hero.androidBeta']; }
