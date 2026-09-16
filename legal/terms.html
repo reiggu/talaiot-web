@@ -18,11 +18,20 @@
   body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:radial-gradient(rgba(21,19,26,.09) 1px, transparent 1.3px); background-size:22px 22px; -webkit-mask-image:radial-gradient(ellipse at 50% 30%, transparent 30%, #000 90%); mask-image:radial-gradient(ellipse at 50% 30%, transparent 30%, #000 90%); }
   header.site { position:sticky; top:0; z-index:10; background:rgba(21,19,26,.9); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); color:#fff; border-bottom:1px solid rgba(255,255,255,.08); }
   header.site .in { max-width:1140px; margin:0 auto; padding:0 22px; height:68px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .logo { display:flex; align-items:center; gap:9px; font-weight:800; font-size:20px; letter-spacing:-0.022em; color:#fff; text-decoration:none; }
+  .logo { flex:none; display:flex; align-items:center; gap:9px; font-weight:800; font-size:20px; letter-spacing:-0.022em; color:#fff; text-decoration:none; }
   .logo svg { flex:none; width:34px; height:34px; }
-  nav.langs { display:flex; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:3px; }
-  nav.langs a { font-size:12px; font-weight:700; letter-spacing:.04em; color:#B9B2A8; text-decoration:none; padding:6px 10px; border-radius:999px; }
-  nav.langs a.on { color:var(--ink); background:#fff; }
+  /* Selector de idioma: desplegable con el borde rojo de arriba, como el de la app y el de la web (16-sep-2026). */
+  details.langs { position:relative; flex-shrink:0; }
+  details.langs summary { list-style:none; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:700; color:#fff; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:7px 10px 7px 12px; }
+  details.langs summary::-webkit-details-marker { display:none; }
+  details.langs summary svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; transition:transform .2s; }
+  details.langs[open] summary svg { transform:rotate(180deg); }
+  details.langs ul { position:absolute; right:0; top:calc(100% + 8px); min-width:156px; margin:0; padding:6px; list-style:none; background:#fff; border-radius:16px; border-top:3px solid var(--brand); box-shadow:0 12px 32px rgba(21,19,26,.28); }
+  details.langs li { margin:0; }
+  details.langs a { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 12px; border-radius:10px; font-size:14.5px; font-weight:600; color:var(--ink); text-decoration:none; }
+  details.langs a:hover, details.langs a:focus-visible { background:#EFE9DD; outline:none; }
+  details.langs a.on { font-weight:800; background:#EFE9DD; }
+  details.langs a.on::after { content:"✓"; color:var(--brand); font-weight:800; }
   .wrap { max-width:760px; margin:0 auto; padding:40px 22px 64px; }
   .back { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--muted); text-decoration:none; margin-bottom:18px; }
   .back:hover { color:var(--ink); }
@@ -49,7 +58,7 @@
 </head>
 <body>
 <header class="site"><div class="in">
-  <a class="logo" href="https://talaiottcg.com/"><svg width="30" height="30" viewBox="12 12 76 76" fill="none" aria-hidden="true">
+  <a class="logo" href="https://talaiottcg.com/?lang=en"><svg width="30" height="30" viewBox="12 12 76 76" fill="none" aria-hidden="true">
   <defs><clipPath id="tlBody"><path d="M42 14 H58 Q62 14 63 19 L64 24 H66 Q78 24 79.8 37 L81 45.9 Q81.38 47 80.2 47 Q78.98 47 79.08 48.1 L79.7 51.4 Q79.8 52.5 81 52.5 L81.6 52.5 Q82.2 52.5 82.33 53.6 L85.4 74 Q87 86 73 86 H27 Q13 86 14.6 74 L17.67 53.6 Q17.8 52.5 19 52.5 L19.6 52.5 Q20.2 52.5 20.3 51.4 L20.92 48.1 Q21.02 47 19.8 47 Q18.62 47 19 45.9 L20.2 37 Q22 24 34 24 H36 L37 19 Q38 14 42 14 Z"/></clipPath></defs>
   <g clip-path="url(#tlBody)">
     <rect width="100" height="100" fill="#F4EEE1"/>
@@ -70,14 +79,14 @@
   <circle cx="50" cy="51" r="7" fill="#1A1A1D"/>
   <circle cx="47.4" cy="48.4" r="1.8" fill="#FFFFFF"/>
 </svg><span>Talaiot</span></a>
-  <nav class="langs"><a href="./terminos.html" class="">Español</a><a href="./terms.html" class="on">English</a><a href="./termes.html" class="">Català</a></nav>
+  <details class="langs"><summary aria-label="Language: English"><span>English</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><ul><li><a href="./terms.html" hreflang="en" class="on" aria-current="page">English</a></li><li><a href="./terminos.html" hreflang="es">Spanish</a></li><li><a href="./termes.html" hreflang="ca">Catalan</a></li><li><a href="./conditions.html" hreflang="fr">French</a></li><li><a href="./nutzungsbedingungen.html" hreflang="de">German</a></li><li><a href="./termini.html" hreflang="it">Italian</a></li><li><a href="./termos.html" hreflang="pt-BR">Portuguese</a></li></ul></details>
 </div></header>
 <div class="wrap">
-  <a class="back" href="https://talaiottcg.com/">&larr; Back to talaiottcg.com</a>
+  <a class="back" href="https://talaiottcg.com/?lang=en">&larr; Back to talaiottcg.com</a>
   <main>
     <p class="eyebrow">Legal</p>
     <h1>Terms of Use</h1>
-    <p class="updated">Last updated: 2026-09-06</p>
+    <p class="updated">Last updated: 6 September 2026</p>
     <p>By using Talaiot you accept these terms. If you do not agree, do not use the app. These terms form an agreement between you and Guillem Reig Martin, Spanish tax ID (NIF) 39404606V, address Calle Cristina 19, 08301 Mataró (Barcelona), Spain, email <a href="mailto:talaiot.tcg@gmail.com">talaiot.tcg@gmail.com</a> ("we").</p>
 <h2>The service</h2>
 <p>Talaiot lets you identify, catalog and value Pokémon TCG cards, and share collections and messages with other users.</p>
@@ -125,5 +134,9 @@
   </main>
   <footer>Talaiot™ · Guillem Reig Martin · <a href="mailto:talaiot.tcg@gmail.com">talaiot.tcg@gmail.com</a></footer>
 </div>
+<script>
+document.addEventListener('click', function (e) { var d = document.querySelector('details.langs'); if (d && d.open && !d.contains(e.target)) d.open = false; });
+document.addEventListener('keydown', function (e) { var d = document.querySelector('details.langs'); if (d && d.open && e.key === 'Escape') { d.open = false; d.querySelector('summary').focus(); } });
+</script>
 </body>
 </html>

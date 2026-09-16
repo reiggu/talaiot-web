@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conditions d’utilisation · Talaiot</title>
+<meta name="theme-color" content="#15131A">
+<link rel="icon" href="https://talaiottcg.com/img/favicon.png?v=3">
+<link rel="apple-touch-icon" href="https://talaiottcg.com/img/apple-touch-icon.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+<style>
+  :root { --brand:#D11F25; --ink:#15131A; --text:#15131A; --muted:#5C574E; --muted2:#9A8F86; --stone:#F4F2EC; --card:#FFFFFF; --hair:#E6DFD2; --yellow:#FFD23F; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--stone); color:var(--text); font:16px/1.65 "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing:antialiased; position:relative; }
+  body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:radial-gradient(rgba(21,19,26,.09) 1px, transparent 1.3px); background-size:22px 22px; -webkit-mask-image:radial-gradient(ellipse at 50% 30%, transparent 30%, #000 90%); mask-image:radial-gradient(ellipse at 50% 30%, transparent 30%, #000 90%); }
+  header.site { position:sticky; top:0; z-index:10; background:rgba(21,19,26,.9); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); color:#fff; border-bottom:1px solid rgba(255,255,255,.08); }
+  header.site .in { max-width:1140px; margin:0 auto; padding:0 22px; height:68px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .logo { flex:none; display:flex; align-items:center; gap:9px; font-weight:800; font-size:20px; letter-spacing:-0.022em; color:#fff; text-decoration:none; }
+  .logo svg { flex:none; width:34px; height:34px; }
+  /* Selector de idioma: desplegable con el borde rojo de arriba, como el de la app y el de la web (16-sep-2026). */
+  details.langs { position:relative; flex-shrink:0; }
+  details.langs summary { list-style:none; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:700; color:#fff; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:7px 10px 7px 12px; }
+  details.langs summary::-webkit-details-marker { display:none; }
+  details.langs summary svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; transition:transform .2s; }
+  details.langs[open] summary svg { transform:rotate(180deg); }
+  details.langs ul { position:absolute; right:0; top:calc(100% + 8px); min-width:156px; margin:0; padding:6px; list-style:none; background:#fff; border-radius:16px; border-top:3px solid var(--brand); box-shadow:0 12px 32px rgba(21,19,26,.28); }
+  details.langs li { margin:0; }
+  details.langs a { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 12px; border-radius:10px; font-size:14.5px; font-weight:600; color:var(--ink); text-decoration:none; }
+  details.langs a:hover, details.langs a:focus-visible { background:#EFE9DD; outline:none; }
+  details.langs a.on { font-weight:800; background:#EFE9DD; }
+  details.langs a.on::after { content:"✓"; color:var(--brand); font-weight:800; }
+  .wrap { max-width:760px; margin:0 auto; padding:40px 22px 64px; }
+  .back { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--muted); text-decoration:none; margin-bottom:18px; }
+  .back:hover { color:var(--ink); }
+  main { background:var(--card); border-radius:22px; padding:34px 32px; box-shadow:0 1px 2px rgba(21,19,26,.05), 0 12px 32px -18px rgba(21,19,26,.35); }
+  @media (max-width:600px) { main { padding:24px 20px; border-radius:18px; } .wrap { padding:24px 16px 48px; } }
+  .eyebrow { font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--brand); margin:0 0 10px; }
+  h1 { font-size:30px; line-height:1.12; letter-spacing:-.02em; margin:0 0 6px; font-weight:800; }
+  .updated { color:var(--muted2); font-size:13px; font-weight:600; margin:0 0 22px; }
+  h2 { font-size:17px; letter-spacing:-.01em; margin:28px 0 8px; font-weight:800; }
+  p, li { font-size:15.5px; color:#2A2622; }
+  ul { padding-left:22px; margin:8px 0; }
+  li { margin:4px 0; }
+  a { color:var(--brand); }
+  footer { color:var(--muted2); font-size:12.5px; text-align:center; margin-top:26px; }
+  footer a { color:var(--muted); }
+  .home-list { list-style:none; padding:0; margin:0; }
+  .home-list li { margin:0; }
+  .home-list a { display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:14px 6px; border-bottom:1px solid var(--hair); text-decoration:none; font-weight:700; color:var(--text); }
+  .home-list a:hover { color:var(--brand); }
+  .home-list li:last-child a { border-bottom:none; }
+  .home-list span { color:var(--muted2); font-weight:600; font-size:12.5px; }
+  .home-h { color:var(--brand); font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; margin:22px 0 4px; }
+</style>
+</head>
+<body>
+<header class="site"><div class="in">
+  <a class="logo" href="https://talaiottcg.com/?lang=fr"><svg width="30" height="30" viewBox="12 12 76 76" fill="none" aria-hidden="true">
+  <defs><clipPath id="tlBody"><path d="M42 14 H58 Q62 14 63 19 L64 24 H66 Q78 24 79.8 37 L81 45.9 Q81.38 47 80.2 47 Q78.98 47 79.08 48.1 L79.7 51.4 Q79.8 52.5 81 52.5 L81.6 52.5 Q82.2 52.5 82.33 53.6 L85.4 74 Q87 86 73 86 H27 Q13 86 14.6 74 L17.67 53.6 Q17.8 52.5 19 52.5 L19.6 52.5 Q20.2 52.5 20.3 51.4 L20.92 48.1 Q21.02 47 19.8 47 Q18.62 47 19 45.9 L20.2 37 Q22 24 34 24 H36 L37 19 Q38 14 42 14 Z"/></clipPath></defs>
+  <g clip-path="url(#tlBody)">
+    <rect width="100" height="100" fill="#F4EEE1"/>
+    <rect width="50" height="24" fill="#2F6FA8"/><rect x="50" width="50" height="24" fill="#E0B12F"/>
+    <rect y="24" width="40" height="8" fill="#E0B12F"/><rect x="40" y="24" width="20" height="8" fill="#C13B2E"/><rect x="60" y="24" width="40" height="8" fill="#4E8C4A"/>
+    <rect y="32" width="30" height="15" fill="#2F6FA8"/><rect x="30" y="32" width="20" height="15" fill="#4E8C4A"/><rect x="50" y="32" width="20" height="15" fill="#E0B12F"/><rect x="70" y="32" width="30" height="15" fill="#C13B2E"/>
+    <path d="M20.9 47 H79.1 L79.92 52.5 H58 V56 H42 V52.5 H20.08 Z" fill="#1A1A1D"/>
+    <g stroke="#1A1A1D" stroke-width="1.1" opacity="0.35"><path d="M0 32 H100 M0 24 H100 M40 24 V32 M60 24 V32 M30 32 V47 M50 32 V47 M70 32 V47 M50 0 V24"/></g>
+    <g stroke="#E2DBCC" stroke-width="1.1"><path d="M0 72 H100 M30 52.5 V72 M70 52.5 V72"/></g>
+    <path d="M43.8 86 L44.5 75.6 Q44.7 73.8 46.4 73.7 L53.6 73.7 Q55.3 73.8 55.5 75.6 L56.2 86 Z" fill="#A99C86" opacity="0.34"/>
+    <path d="M43.8 86 L44.5 75.6 Q44.7 73.8 46.4 73.7 L53.6 73.7 Q55.3 73.8 55.5 75.6 L56.2 86" stroke="#E2DBCC" stroke-width="1.5" stroke-linejoin="round"/>
+  </g>
+  <path d="M42 14 H58 Q62 14 63 19 L64 24 H66 Q78 24 79.8 37 L81 45.9 Q81.38 47 80.2 47 Q78.98 47 79.08 48.1 L79.7 51.4 Q79.8 52.5 81 52.5 L81.6 52.5 Q82.2 52.5 82.33 53.6 L85.4 74 Q87 86 73 86 H27 Q13 86 14.6 74 L17.67 53.6 Q17.8 52.5 19 52.5 L19.6 52.5 Q20.2 52.5 20.3 51.4 L20.92 48.1 Q21.02 47 19.8 47 Q18.62 47 19 45.9 L20.2 37 Q22 24 34 24 H36 L37 19 Q38 14 42 14 Z" stroke="#1A1A1D" stroke-width="1.9" stroke-linejoin="round"/>
+  <path d="M36 24 H64" stroke="#1A1A1D" stroke-width="1.9" stroke-linecap="round"/>
+  <rect x="45.5" y="16.6" width="9" height="4.2" rx="1.5" fill="#F6F0E2" stroke="#1A1A1D" stroke-width="0.9"/>
+  <circle cx="50" cy="51" r="11.8" fill="#F4EEE1"/>
+  <circle cx="50" cy="51" r="10.6" stroke="#1A1A1D" stroke-width="2.2"/>
+  <circle cx="50" cy="51" r="7" fill="#1A1A1D"/>
+  <circle cx="47.4" cy="48.4" r="1.8" fill="#FFFFFF"/>
+</svg><span>Talaiot</span></a>
+  <details class="langs"><summary aria-label="Langue: Français"><span>Français</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><ul><li><a href="./terms.html" hreflang="en">Anglais</a></li><li><a href="./terminos.html" hreflang="es">Espagnol</a></li><li><a href="./termes.html" hreflang="ca">Catalan</a></li><li><a href="./conditions.html" hreflang="fr" class="on" aria-current="page">Français</a></li><li><a href="./nutzungsbedingungen.html" hreflang="de">Allemand</a></li><li><a href="./termini.html" hreflang="it">Italien</a></li><li><a href="./termos.html" hreflang="pt-BR">Portugais</a></li></ul></details>
+</div></header>
+<div class="wrap">
+  <a class="back" href="https://talaiottcg.com/?lang=fr">&larr; Retour à talaiottcg.com</a>
+  <main>
+    <p class="eyebrow">Legal</p>
+    <h1>Conditions d’utilisation</h1>
+    <p class="updated">Dernière mise à jour : 6 septembre 2026</p>
+    <p>En utilisant Talaiot, vous acceptez les présentes conditions. Si vous n’êtes pas d’accord, n’utilisez pas l’app. Ces conditions constituent un accord entre vous et Guillem Reig Martin, NIF (numéro d’identification fiscale espagnol) 39404606V, adresse : Calle Cristina 19, 08301 Mataró (Barcelone), Espagne, e-mail <a href="mailto:talaiot.tcg@gmail.com">talaiot.tcg@gmail.com</a> (« nous »).</p>
+<h2>Le service</h2>
+<p>Talaiot vous permet d’identifier, de cataloguer et d’estimer des cartes du JCC Pokémon, et de partager des collections et des messages avec d’autres utilisateurs.</p>
+<h2>Licence d’utilisation</h2>
+<p>Nous vous concédons une licence limitée, non exclusive, non transférable et révocable d’utilisation de l’app à des fins personnelles et non commerciales, sous réserve des présentes conditions.</p>
+<h2>Votre compte</h2>
+<p>Vous êtes responsable de la sécurité de votre compte et de l’activité réalisée avec celui-ci ; fournissez des informations exactes et ne partagez ni ne cédez votre compte à une autre personne. Vous devez avoir au moins 14 ans (âge minimum indiqué dans la Politique de confidentialité). Si vous êtes mineur, vous avez besoin de l’autorisation de votre père, de votre mère ou de votre tuteur légal, qui est responsable de superviser votre utilisation de l’app.</p>
+<h2>Utilisation acceptable</h2>
+<ul><li>Ne harcelez, ne menacez et n’insultez pas les autres utilisateurs.</li><li>N’envoyez pas de spam ni de contenu illégal, offensant ou portant atteinte aux droits de tiers.</li><li>Ne copiez, ne modifiez, ne décompilez pas l’app et n’en faites pas d’ingénierie inverse.</li><li>N’essayez pas de compromettre la sécurité de l’app ou d’autres utilisateurs, ni d’interférer avec leur fonctionnement.</li></ul>
+<h2>Contenu des utilisateurs</h2>
+<p>Vous êtes responsable du contenu que vous publiez (collections publiques, profil, messages). Nous pouvons modérer, masquer ou supprimer du contenu et suspendre les comptes qui enfreignent ces conditions. Vous pouvez bloquer et signaler d’autres utilisateurs.</p>
+<h2>Propriété intellectuelle et absence d’affiliation</h2>
+<p>Talaiot est une app indépendante et n’est NI produite, NI approuvée, NI sponsorisée par The Pokémon Company International, Nintendo, Game Freak ou Creatures Inc., ni par aucune de leurs filiales, et n’est pas affiliée à ces sociétés. Pokémon, le Jeu de Cartes à Collectionner Pokémon (JCC) et tout le matériel associé — images de cartes, marques, logos, noms et personnages — sont des marques déposées et la propriété de leurs titulaires respectifs. Les références au contenu Pokémon sont affichées à des fins d’information et de référence, et nous ne revendiquons aucun droit sur cette propriété intellectuelle. Les données de cartes et de prix proviennent de tiers et sont fournies sans garantie d’exactitude.</p>
+<h2>Responsabilités en matière de propriété intellectuelle</h2>
+<p>Vous vous engagez à utiliser le contenu lié à Pokémon uniquement à des fins personnelles et non commerciales, à ne pas le redistribuer, le vendre ni l’exploiter commercialement, et à respecter les droits de ses titulaires. Si vous êtes titulaire de droits et estimez qu’il y est porté atteinte, écrivez-nous à <a href="mailto:talaiot.tcg@gmail.com">talaiot.tcg@gmail.com</a>.</p>
+<h2>Prix</h2>
+<p>Les prix affichés sont indicatifs, fournis à titre d’information, et ne constituent pas un conseil financier ou en investissement.</p>
+<h2>Talaiot Pro (abonnement)</h2>
+<p>Certaines fonctionnalités (les prix du marché des cartes gradées, les graphiques d’évolution de votre collection, les alertes de prix de votre liste de souhaits et les deux modes de scan par lots : le scan multiple et la photo d’une page entière de classeur) nécessitent l’abonnement payant « Talaiot Pro » : un abonnement à renouvellement automatique, mensuel ou annuel au choix, dont le prix, taxes comprises, est affiché dans l’app avant la confirmation de l’achat.</p>
+<ul><li>Essai gratuit : la formule mensuelle comprend une période d’essai gratuite (actuellement 7 jours) pour les personnes qui n’en ont pas déjà bénéficié ; la formule annuelle ne comprend pas d’essai. À la fin de l’essai, la formule choisie est facturée, sauf si vous résiliez au moins 24 heures avant son terme. La durée de l’essai et le prix appliqué ensuite sont affichés dans l’app avant la confirmation.</li><li>Le paiement est effectué via votre compte App Store ou Google Play lors de la confirmation de l’achat. Nous ne recevons ni ne conservons vos données de paiement.</li><li>L’abonnement se renouvelle automatiquement pour des périodes de même durée que la formule choisie (un mois ou un an), sauf si vous le résiliez au moins 24 heures avant la fin de la période en cours.</li><li>Vous pouvez le gérer ou le résilier à tout moment depuis les réglages d’abonnement de votre compte App Store ou Google Play. La résiliation prend effet à la fin de la période déjà payée, dont vous continuez à profiter jusque-là ; aucun remboursement au prorata n’est accordé pour les périodes partielles, sans préjudice des politiques de remboursement de la boutique.</li><li>Si l’abonnement prend fin, vous n’aurez plus accès aux prix gradés ni aux autres fonctionnalités payantes ; le scan des cartes une par une, les prix du marché non gradés, le reste de l’app et vos données ne sont pas affectés, et les valeurs gradées enregistrées dans votre collection pendant votre abonnement sont conservées.</li><li>Supprimer votre compte Talaiot ne résilie PAS l’abonnement : pensez à le résilier dans les réglages de votre boutique.</li><li>Nous pouvons modifier le prix ou le contenu de l’abonnement. Les changements de prix sont communiqués via la boutique et ne s’appliquent qu’au renouvellement suivant, que vous pouvez résilier si vous n’êtes pas d’accord.</li></ul>
+<h2>Droit de rétractation</h2>
+<p>Si vous êtes un consommateur dans l’Union européenne, vous disposez d’un délai de 14 jours pour exercer votre droit de rétractation. En souscrivant l’abonnement, vous consentez expressément à ce que la fourniture du service numérique commence immédiatement. Les demandes de rétractation et de remboursement sont traitées par la boutique où vous avez effectué l’achat (Apple ou Google), selon ses procédures ; vous pouvez également nous écrire à <a href="mailto:talaiot.tcg@gmail.com">talaiot.tcg@gmail.com</a>.</p>
+<h2>Services tiers</h2>
+<p>L’app peut intégrer des services tiers ou renvoyer vers eux (par exemple, des liens vers Cardmarket). Nous ne sommes pas responsables du contenu, de la disponibilité ni des pratiques de ces tiers ; leur utilisation se fait à vos propres risques et est régie par leurs propres conditions.</p>
+<h2>Conditions des boutiques d’applications</h2>
+<p>Si vous téléchargez l’app depuis l’App Store ou Google Play, votre utilisation est également soumise aux conditions d’Apple ou de Google, que vous vous engagez à respecter.</p>
+<h2>Résiliation et suspension</h2>
+<p>Vous pouvez supprimer votre compte à tout moment depuis les Réglages. La suppression du compte ne résilie pas à elle seule l’abonnement souscrit via la boutique (voir « Talaiot Pro »). Nous pouvons suspendre ou fermer les comptes qui enfreignent ces conditions.</p>
+<h2>Exclusion de garanties</h2>
+<p>L’app est fournie « en l’état » et « selon disponibilité », sans garantie d’aucune sorte, expresse ou implicite, y compris les garanties de qualité marchande, d’adéquation à un usage particulier ou d’absence de contrefaçon. Nous ne garantissons pas qu’elle fonctionnera sans interruption ni erreur.</p>
+<h2>Limitation de responsabilité</h2>
+<p>Dans la mesure permise par la loi, nous ne sommes pas responsables des dommages indirects, accessoires, spéciaux ou consécutifs découlant de l’utilisation de l’app, y compris la perte de données ou l’inexactitude des données de tiers.</p>
+<h2>Indemnisation</h2>
+<p>Vous vous engagez à nous indemniser et à nous garantir contre toute réclamation, tout dommage ou toute dépense (y compris les frais de justice) découlant de votre manquement aux présentes conditions ou d’une utilisation abusive de l’app.</p>
+<h2>Droit applicable</h2>
+<p>Les présentes conditions sont régies par le droit espagnol. Sans préjudice des droits que la législation relative à la protection des consommateurs reconnaît à ces derniers, tout litige sera soumis aux juridictions espagnoles.</p>
+<h2>Divisibilité</h2>
+<p>Si une clause des présentes conditions est jugée invalide ou inapplicable, les autres clauses resteront pleinement en vigueur.</p>
+<h2>Intégralité de l’accord</h2>
+<p>Les présentes conditions et la Politique de confidentialité constituent l’intégralité de l’accord entre vous et nous concernant l’app.</p>
+<h2>Modifications</h2>
+<p>Nous pouvons mettre à jour ces conditions et vous informerons des modifications importantes dans l’app.</p>
+<h2>Contact</h2>
+<p>Pour toute question, écrivez à <a href="mailto:talaiot.tcg@gmail.com">talaiot.tcg@gmail.com</a>.</p>
+  </main>
+  <footer>Talaiot™ · Guillem Reig Martin · <a href="mailto:talaiot.tcg@gmail.com">talaiot.tcg@gmail.com</a></footer>
+</div>
+<script>
+document.addEventListener('click', function (e) { var d = document.querySelector('details.langs'); if (d && d.open && !d.contains(e.target)) d.open = false; });
+document.addEventListener('keydown', function (e) { var d = document.querySelector('details.langs'); if (d && d.open && e.key === 'Escape') { d.open = false; d.querySelector('summary').focus(); } });
+</script>
+</body>
+</html>

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Talaiot · Escáner de cartas TCG</title>
-<meta name="description" content="Escanea tus cartas con la cámara y mira lo que valen, también las japonesas, coreanas y chinas. Precios de mercado, colección organizada y comunidad. Gratis y sin anuncios.">
-<meta property="og:title" content="Talaiot · Escáner de cartas TCG">
-<meta property="og:description" content="Escanea tus cartas y mira lo que valen. Carta a carta, lo que construyes permanece.">
+<meta name="description" id="metadesc" content="Escanea tus cartas con la cámara y mira lo que valen, también las japonesas, coreanas y chinas. Precios de mercado, colección organizada y comunidad. Gratis y sin anuncios.">
+<meta property="og:title" id="ogtitle" content="Talaiot · Escáner de cartas TCG">
+<meta property="og:description" id="ogdesc" content="Escanea tus cartas y mira lo que valen. Carta a carta, lo que construyes permanece.">
 <meta property="og:image" content="https://talaiottcg.com/img/icono-512.png">
 <meta property="og:url" content="https://talaiottcg.com/">
 <meta name="theme-color" content="#15131A">
@@ -66,16 +66,26 @@ p{margin:0}
 .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1.25rem;letter-spacing:-.022em}
 .brand svg{width:34px;height:34px}
 .nav-links{display:none;gap:20px;margin-left:8px;font-weight:600;font-size:.92rem;color:var(--text2)}
-.nav-links a{position:relative;padding:4px 0}
+.nav-links a{position:relative;padding:4px 0;white-space:nowrap}
 .nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--red);border-radius:2px;transform:scaleX(0);transform-origin:left;transition:transform .25s}
 .nav-links a:hover{color:var(--ink)}.nav-links a:hover::after{transform:scaleX(1)}
-@media(min-width:900px){.nav-links{display:flex}}
+@media(min-width:1080px){.nav-links{display:flex}}
 .nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 .nav-right .btn{display:none}
 @media(min-width:560px){.nav-right .btn{display:inline-flex}}
 .seg{display:flex;background:#fff;border:1px solid var(--hair);border-radius:99px;padding:3px}
 .seg button{border:0;background:transparent;font:inherit;font-weight:700;font-size:.74rem;letter-spacing:.04em;padding:6px 10px;border-radius:99px;color:var(--text2);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+/* selector de idioma: desplegable con el borde rojo de arriba, como los de la app (16-sep-2026) */
+.langsel{position:relative}
+.langbtn{display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:700;font-size:.8rem;padding:7px 10px 7px 12px;border-radius:99px;cursor:pointer}
+.langbtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.langbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.langmenu{position:absolute;right:0;top:calc(100% + 8px);min-width:156px;margin:0;padding:6px;list-style:none;background:#fff;border-radius:16px;border-top:3px solid var(--red);box-shadow:0 12px 32px rgba(21,19,26,.28);z-index:40}
+.langmenu button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;border:0;background:transparent;font:inherit;font-size:.92rem;font-weight:600;color:var(--ink);text-align:left;padding:9px 12px;border-radius:10px;cursor:pointer}
+.langmenu button:hover,.langmenu button:focus-visible{background:var(--hair2);outline:none}
+.langmenu button[aria-selected="true"]{font-weight:800;background:var(--hair2)}
+.langmenu button[aria-selected="true"]::after{content:"✓";color:var(--red);font-weight:800}
 
 /* ── buttons ── */
 .btn{display:inline-flex;align-items:center;gap:8px;border-radius:99px;padding:12px 20px;font-weight:700;font-size:.95rem;border:2px solid var(--ink);cursor:pointer;transition:transform .18s var(--ease),box-shadow .18s;white-space:nowrap;position:relative;background:var(--ink);color:#fff;box-shadow:var(--sh-hard)}
@@ -372,7 +382,7 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
 <header class="nav">
   <div class="wrap nav-in">
     <a class="brand" href="#" aria-label="Talaiot"><svg aria-hidden="true"><use href="#logo"/></svg><span>Talaiot</span></a>
-    <nav class="nav-links" aria-label="Secciones">
+    <nav class="nav-links" data-ia="aria.sections" aria-label="Secciones">
       <a href="#como" data-i="nav.how">Cómo funciona</a>
       <a href="#precios" data-i="nav.prices">Precios</a>
       <a href="#coleccion" data-i="nav.collection">Colección</a>
@@ -381,10 +391,17 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
       <a href="#porque" data-i="nav.why">Por qué Talaiot</a>
     </nav>
     <div class="nav-right">
-      <div class="seg" role="group" aria-label="Idioma">
-        <button type="button" data-lang="es" aria-pressed="true">ES</button>
-        <button type="button" data-lang="ca" aria-pressed="false">CAT</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      <div class="langsel" id="langsel">
+        <button type="button" class="langbtn" id="langbtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="langmenu" data-ia="aria.lang" aria-label="Idioma"><span id="langcur">Español</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <ul class="langmenu" id="langmenu" role="listbox" data-ia="aria.lang" aria-label="Idioma" hidden>
+          <li><button type="button" role="option" data-lang="en" aria-selected="false">Inglés</button></li>
+          <li><button type="button" role="option" data-lang="es" aria-selected="true">Español</button></li>
+          <li><button type="button" role="option" data-lang="ca" aria-selected="false">Catalán</button></li>
+          <li><button type="button" role="option" data-lang="fr" aria-selected="false">Francés</button></li>
+          <li><button type="button" role="option" data-lang="de" aria-selected="false">Alemán</button></li>
+          <li><button type="button" role="option" data-lang="it" aria-selected="false">Italiano</button></li>
+          <li><button type="button" role="option" data-lang="pt" aria-selected="false">Portugués</button></li>
+        </ul>
       </div>
       <a class="btn btn-red btn-sm" href="#descargar" data-i="nav.cta">Descargar</a>
     </div>
@@ -407,16 +424,16 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
       <p class="freeline hero-in" style="--d:.3s" data-i="hero.free">Gratis · sin anuncios · sin cuenta obligatoria</p>
     </div>
     <div class="stage hero-in" style="--d:.28s">
-      <div class="carousel" id="carousel" aria-label="Pantallas de la app">
-        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="coleccion" alt="Mi colección: valor total, fichas de cartas, escaneadas, gradeadas y deseadas" width="640" height="2068" loading="eager"></div></div></div>
-        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="ficha" alt="Ficha de una carta con su precio de mercado" width="640" height="3114" loading="eager"></div></div></div>
-        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="colecciones" alt="Catálogo de colecciones con progreso por set" width="640" height="2068" loading="eager"></div></div></div>
-        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="chat" alt="Chat con una carta enviada dentro del mensaje" width="640" height="2524" loading="lazy"></div></div></div>
-        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="social" alt="Hub social con los coleccionistas que sigues" width="640" height="1896" loading="lazy"></div></div></div>
+      <div class="carousel" id="carousel" data-ia="aria.carousel" aria-label="Pantallas de la app">
+        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="coleccion" data-ialt="alt.coleccion" alt="Mi colección: valor total, cartas, escaneadas, gradeadas y deseadas" width="640" height="2068" loading="eager"></div></div></div>
+        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="ficha" data-ialt="alt.ficha" alt="Ficha de una carta con su precio de mercado" width="640" height="3114" loading="eager"></div></div></div>
+        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="colecciones" data-ialt="alt.colecciones" alt="Catálogo de colecciones con el progreso de cada set" width="640" height="2068" loading="eager"></div></div></div>
+        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="chat" data-ialt="alt.chat" alt="Chat con una carta enviada dentro del mensaje" width="640" height="2524" loading="lazy"></div></div></div>
+        <div class="slide"><div class="ph auto" style="--dur:6.5s"><div class="scr"><img data-shot="social" data-ialt="alt.social" alt="Hub social con los coleccionistas que sigues" width="640" height="1896" loading="lazy"></div></div></div>
       </div>
       <div class="dots" id="dots">
-        <button type="button" class="arrow" data-nav="-1" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
-        <button type="button" class="arrow" data-nav="1" aria-label="Siguiente"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+        <button type="button" class="arrow" data-nav="-1" data-ia="aria.prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button type="button" class="arrow" data-nav="1" data-ia="aria.next" aria-label="Siguiente"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
       </div>
     </div>
   </div>
@@ -470,7 +487,7 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
 <section id="coleccion">
   <div class="wrap">
     <div class="split">
-      <div class="reveal"><div class="ph auto" style="--dur:18s"><div class="scr"><img data-shot="favoritas" alt="Carpeta de favoritas con el valor de cada carta" width="640" height="1844" loading="lazy"></div></div></div>
+      <div class="reveal"><div class="ph auto" style="--dur:18s"><div class="scr"><img data-shot="favoritas" data-ialt="alt.favoritas" alt="Carpeta de favoritas con el valor de cada carta" width="640" height="1844" loading="lazy"></div></div></div>
       <div>
         <div class="sec-head reveal" style="margin-bottom:0">
           <p class="eyebrow" data-i="co.eyebrow">Tu colección</p>
@@ -500,7 +517,7 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
           <p class="bigl" data-i="a.bigl">cartas · Internacional · Japón · Corea · China</p>
           <div class="regions" aria-hidden="true"><span class="en">INT</span><span class="jp">JP</span><span class="ko">KO</span><span class="cn">CN</span></div>
         </div>
-        <div class="ph auto" style="--dur:26s"><div class="scr"><img data-shot="set" alt="Set Pitch Black con todas sus cartas" width="640" height="3089" loading="lazy"></div></div>
+        <div class="ph auto" style="--dur:26s"><div class="scr"><img data-shot="set" data-ialt="alt.set" alt="El set Pitch Black con todas sus cartas" width="640" height="3089" loading="lazy"></div></div>
       </div>
     </div>
   </div>
@@ -514,9 +531,9 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
       <p class="lead" data-i="com.lead">Perfil, colecciones públicas, seguidores y chat con cartas dentro. Todo gratis y todo opcional.</p>
     </div>
     <div class="com-phones reveal">
-      <div class="ph auto" style="--dur:18s"><div class="scr"><img data-shot="social" alt="Hub social con los coleccionistas que sigues" width="640" height="1896" loading="lazy"></div></div>
-      <div class="ph auto" style="--dur:20s"><div class="scr"><img data-shot="perfil" alt="Perfil de otra coleccionista con su colección pública" width="640" height="2303" loading="lazy"></div></div>
-      <div class="ph auto" style="--dur:22s"><div class="scr"><img data-shot="chat" alt="Chat con una carta enviada dentro del mensaje" width="640" height="2524" loading="lazy"></div></div>
+      <div class="ph auto" style="--dur:18s"><div class="scr"><img data-shot="social" data-ialt="alt.social" alt="Hub social con los coleccionistas que sigues" width="640" height="1896" loading="lazy"></div></div>
+      <div class="ph auto" style="--dur:20s"><div class="scr"><img data-shot="perfil" data-ialt="alt.perfil" alt="Perfil de otra coleccionista con su colección pública" width="640" height="2303" loading="lazy"></div></div>
+      <div class="ph auto" style="--dur:22s"><div class="scr"><img data-shot="chat" data-ialt="alt.chat" alt="Chat con una carta enviada dentro del mensaje" width="640" height="2524" loading="lazy"></div></div>
     </div>
     <div class="com-grid">
       <div class="com-item reveal"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span><h3 data-i="c1h">Perfil de coleccionista</h3><p data-i="c1p">Tu perfil con tus cartas, tu descripción y tus colecciones públicas.</p></div>
@@ -531,7 +548,7 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
   <div class="wrap">
     <div class="sec-head reveal">
       <p class="eyebrow" data-i="p.eyebrow">Talaiot Pro</p>
-      <h2 data-i="p.h2">Lo importante es gratis. Lo de coleccionista serio, 2,99 € al mes.</h2>
+      <h2 data-i="p.h2">Lo importante es gratis. Lo de coleccionista serio, 3,99 € al mes.</h2>
     </div>
     <div class="plans">
       <article class="plan reveal">
@@ -546,8 +563,8 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
         <p class="note" data-i="p.freenote">Y se puede usar sin cuenta.</p>
       </article>
       <article class="plan pro reveal">
-        <div class="plan-head"><h3>Talaiot Pro <span class="plan-tag" data-i="p.tag">7 días gratis</span></h3><div class="price"><span class="num" data-i="p.price">2,99 €</span><small data-i="p.per">/ mes</small></div></div>
-        <p class="annual"><b data-i="p.annual">o 29,99 € al año</b> <span data-i="p.annualSub">· 2,50 € al mes · ahorras un 16 %</span></p>
+        <div class="plan-head"><h3>Talaiot Pro <span class="plan-tag" data-i="p.tag">7 días gratis</span></h3><div class="price"><span class="num" data-i="p.price">3,99 €</span><small data-i="p.per">/ mes</small></div></div>
+        <p class="annual"><b data-i="p.annual">o 34,99 € al año</b> <span data-i="p.annualSub">· 2,92 € al mes · ahorras un 27 %</span></p>
         <ul>
           <li data-i="pp1">Valor gradeado por compañía y nota: PSA, BGS, CGC, ACE…</li>
           <li data-i="pp2">Escaneo múltiple: varias cartas a la vez, en vivo</li>
@@ -555,7 +572,7 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
           <li data-i="pp4">Gráficas de evolución de tu colección y del mercado</li>
           <li data-i="pp5">Alertas cuando una carta de tu lista de deseos baja de precio</li>
         </ul>
-        <p class="note" data-i="p.pronote">Prueba gratis de 7 días en el plan mensual. Sin permanencia, se cancela desde la tienda.</p>
+        <p class="note" data-i="p.pronote">Prueba gratis de 7 días en el plan mensual. Sin permanencia, se cancela desde la tienda. Precios de la zona euro: tu tienda te muestra los de tu país.</p>
       </article>
     </div>
   </div>
@@ -568,15 +585,15 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
       <h2 data-i="q.h2">Lo que suelen preguntar</h2>
     </div>
     <div class="faq">
-      <details class="reveal"><summary data-i="q1"></summary><p data-i="a1"></p></details>
-      <details class="reveal"><summary data-i="q2"></summary><p data-i="a2"></p></details>
-      <details class="reveal"><summary data-i="q3"></summary><p data-i="a3"></p></details>
-      <details class="reveal"><summary data-i="q4"></summary><p data-i="a4"></p></details>
-      <details class="reveal"><summary data-i="q5"></summary><p data-i="a5"></p></details>
-      <details class="reveal"><summary data-i="q6"></summary><p data-i="a6"></p></details>
-      <details class="reveal"><summary data-i="q7"></summary><p data-i="a7"></p></details>
-      <details class="reveal"><summary data-i="q8"></summary><p data-i="a8"></p></details>
-      <details class="reveal"><summary data-i="q9"></summary><p data-i="a9"></p></details>
+      <details class="reveal"><summary data-i="q1">¿Es gratis?</summary><p data-i="a1">Sí. Escanear carta a carta, ver precios, organizar la colección y toda la parte social son gratis y sin anuncios. Talaiot Pro añade los precios gradeados, el escaneo múltiple y de página de álbum, las gráficas y las alertas, con 7 días de prueba.</p></details>
+      <details class="reveal"><summary data-i="q2">¿Está en iPhone y en Android?</summary><p data-i="a2">Sí, en los dos y con las mismas funciones. Con la cuenta, tu colección se sincroniza entre dispositivos.</p></details>
+      <details class="reveal"><summary data-i="q3">¿Qué cartas reconoce?</summary><p data-i="a3">Cartas Pokémon en inglés y en los idiomas europeos, y también japonesas, coreanas y chinas, incluidas las colecciones exclusivas de China. Lee el código de set y el número y, si no se ven, compara la ilustración. Todo ocurre en tu móvil: las fotos no se suben a ningún servidor.</p></details>
+      <details class="reveal"><summary data-i="q4">¿De dónde salen los precios y cada cuánto se actualizan?</summary><p data-i="a4">De Cardmarket (euros) y TCGplayer (dólares), actualizados de forma continua; las cartas asiáticas llevan su propia fuente. Los gradeados, de ventas reales por compañía y nota. Son orientativos: el mercado manda.</p></details>
+      <details class="reveal"><summary data-i="q5">¿Distingue tiradas y cartas gradeadas?</summary><p data-i="a5">Sí. Normal, reverse, holo y el resto de tiradas tienen su propio precio. Con Talaiot Pro ves además el valor gradeado por compañía y nota (PSA, BGS, CGC, ACE, SGC y TAG) y guardas cada carta como raw o gradeada.</p></details>
+      <details class="reveal"><summary data-i="q6">¿Hace falta cuenta?</summary><p data-i="a6">No. Puedes entrar como invitado y usarla. La cuenta guarda la colección en la nube, la sincroniza entre dispositivos y abre la parte social.</p></details>
+      <details class="reveal"><summary data-i="q7">¿Puedo exportar mi colección?</summary><p data-i="a7">Sí, a un CSV con nombre, set, número, idioma, tirada, estado, cantidad y valor. La colección es tuya.</p></details>
+      <details class="reveal"><summary data-i="q8">¿Cómo cancelo Talaiot Pro?</summary><p data-i="a8">Desde los ajustes de suscripciones de tu App Store o Google Play, cuando quieras. Si cancelas durante los 7 días de prueba, no se cobra nada.</p></details>
+      <details class="reveal"><summary data-i="q9">¿Talaiot es de Pokémon?</summary><p data-i="a9">No. Talaiot™ es una app independiente. No está afiliada, asociada ni patrocinada por The Pokémon Company, Nintendo, Creatures ni Game Freak.</p></details>
     </div>
   </div>
 </section>
@@ -656,7 +673,7 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
         </ul>
       </div>
     </div>
-    <p class="disclaimer" data-i="ft.disc">Talaiot™ es una herramienta independiente para coleccionistas. No está afiliada, asociada ni patrocinada por The Pokémon Company, Nintendo, Creatures, Game Freak ni Wizards of the Coast. Todas las marcas y nombres de productos pertenecen a sus respectivos propietarios y se usan solo con fines identificativos. Los precios provienen de fuentes públicas de mercado y son orientativos. © 2026 Talaiot.</p>
+    <p class="disclaimer" data-i="ft.disc">Talaiot™ es una herramienta independiente para coleccionistas. No está afiliada ni asociada a The Pokémon Company, Nintendo, Creatures, Game Freak ni Wizards of the Coast, ni patrocinada por ellas. Todas las marcas y nombres de productos pertenecen a sus respectivos propietarios y se usan solo con fines identificativos. Los precios provienen de fuentes públicas de mercado y son orientativos. © 2026 Talaiot.</p>
   </div>
 </footer>
 
@@ -669,158 +686,1049 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
   var LEGAL = {
     es: { privacy: 'privacidad', terms: 'terminos', delete: 'borrar-cuenta' },
     ca: { privacy: 'privacitat', terms: 'termes', delete: 'esborrar-compte' },
-    en: { privacy: 'privacy', terms: 'terms', delete: 'delete-account' }
+    en: { privacy: 'privacy', terms: 'terms', delete: 'delete-account' },
+    fr: { privacy: 'confidentialite', terms: 'conditions', delete: 'supprimer-compte' },
+    de: { privacy: 'datenschutz', terms: 'nutzungsbedingungen', delete: 'konto-loeschen' },
+    it: { privacy: 'informativa-privacy', terms: 'termini', delete: 'elimina-account' },
+    pt: { privacy: 'privacidade', terms: 'termos', delete: 'excluir-conta' }
   };
-  var IMGDIR = { es: 'es', ca: 'cat', en: 'en' };
+  // Carpeta de capturas por idioma (hechas en la app, en su idioma, con la cuenta ficticia de scripts/seed-capturas.mjs).
+  var IMGDIR = { es: 'es', ca: 'cat', en: 'en', fr: 'fr', de: 'de', it: 'it', pt: 'pt' };
+  // Código BCP 47 de la página.
+  // Nombre de cada idioma EN el idioma activo de la página (el selector se traduce con la web, 16-sep-2026).
+  var LANG_NAME = {"en": {"en": "English", "es": "Spanish", "ca": "Catalan", "fr": "French", "de": "German", "it": "Italian", "pt": "Portuguese"}, "es": {"en": "Inglés", "es": "Español", "ca": "Catalán", "fr": "Francés", "de": "Alemán", "it": "Italiano", "pt": "Portugués"}, "ca": {"en": "Anglès", "es": "Castellà", "ca": "Català", "fr": "Francès", "de": "Alemany", "it": "Italià", "pt": "Portuguès"}, "fr": {"en": "Anglais", "es": "Espagnol", "ca": "Catalan", "fr": "Français", "de": "Allemand", "it": "Italien", "pt": "Portugais"}, "de": {"en": "Englisch", "es": "Spanisch", "ca": "Katalanisch", "fr": "Französisch", "de": "Deutsch", "it": "Italienisch", "pt": "Portugiesisch"}, "it": {"en": "Inglese", "es": "Spagnolo", "ca": "Catalano", "fr": "Francese", "de": "Tedesco", "it": "Italiano", "pt": "Portoghese"}, "pt": {"en": "Inglês", "es": "Espanhol", "ca": "Catalão", "fr": "Francês", "de": "Alemão", "it": "Italiano", "pt": "Português"}};
+  var HTML_LANG = { en: 'en', es: 'es', ca: 'ca', fr: 'fr', de: 'de', it: 'it', pt: 'pt-BR' };
   var T = {
     es: {
-      title: 'Talaiot · Escáner de cartas TCG',
-      'nav.how': 'Cómo funciona', 'nav.prices': 'Precios', 'nav.collection': 'Colección', 'nav.community': 'Comunidad', 'nav.premium': 'Talaiot Pro', 'nav.why': 'Por qué Talaiot', 'nav.faq': 'Preguntas', 'nav.cta': 'Descargar',
-      'hero.tag': 'iPhone · Android', 'hero.eyebrow': 'Escáner de cartas TCG', 'hero.h1a': 'Escanea tus cartas.', 'hero.h1b': 'Mira lo que valen.',
-      'hero.claim': 'Carta a carta, lo que construyes permanece.',
-      'hero.sub': 'Escáner con precio de mercado al momento, catálogo internacional y asiático, colección organizada con su valor al día, precios gradeados, alertas, y una comunidad de coleccionistas con chat. Gratis y sin anuncios.',
-      'b.ios1': 'Consíguelo en el', 'b.and1': 'DISPONIBLE EN', 'hero.soon': 'Muy pronto en las tiendas · iPhone y Android',
-      'hero.free': 'Gratis · sin anuncios · sin cuenta obligatoria',
-      'h.eyebrow': 'Cómo funciona', 'h.h2': 'Apunta, mira el precio, guárdala', 'h.lead': 'Todo el reconocimiento ocurre en tu móvil: la foto no sale de él. Sin límite de cartas y sin cuenta obligatoria.',
-      'h.popl': 'Precio de mercado', 'h.popt': 'Pikachu ex · Raw · Cardmarket',
-      st1h: 'Apunta con la cámara', st1p: 'Lee el número y el código de set impresos y, si no se ven, compara la ilustración con el catálogo. Internacional, japonesa, coreana o china.',
-      st2h: 'Mira lo que vale', st2p: 'Precio de mercado en euros (Cardmarket) o en dólares (TCGplayer), por tirada: normal, reverse, holo. Con Pro, también gradeada.',
-      st3h: 'Guárdala en tu colección', st3p: 'Idioma, cantidad, estado y carpeta. El valor total de tu colección se actualiza solo, día a día.',
-      m1h: 'Carta a carta', m1p: 'Una carta delante de la cámara y lista. Sin límite.',
-      m2h: 'Escaneo múltiple', m2p: 'Varias cartas a la vez, en vivo: apunta a la mesa y las reconoce todas de una pasada.',
-      m3h: 'Página de álbum', m3p: 'Una foto a la página del álbum, de 2×2, 3×3 o 4×4, y todas las cartas entran a la vez.',
-      'chip.free': 'Gratis',
-      'pr.eyebrow': 'Precios', 'pr.h2': 'Lo que vale hoy, y hacia dónde va', 'pr.lead': 'Precios de mercado de Cardmarket y TCGplayer, actualizados de forma continua. Son orientativos: el mercado manda.',
-      pr1h: 'Gradeadas, por compañía y nota', pr1p: 'PSA, BGS, CGC, ACE, SGC y TAG: el valor de cada nota, a partir de ventas reales.',
-      pr2h: 'La evolución de tu colección', pr2p: 'Gráficas del valor de tu colección y del mercado, día a día, para ver de dónde viene cada subida.',
-      pr3h: 'Radar de tendencias', pr3p: 'Las cartas que más suben y más bajan en los últimos 30 días, por catálogo.',
-      'co.eyebrow': 'Tu colección', 'co.h2': 'Ordenada, valorada y completa set a set', 'co.lead': 'Cada carta con su idioma, su tirada y su estado. Cada set con su barra: cuánto llevas y cuánto te falta.',
-      co1h: 'Carpetas', co1p: 'Favoritas, japonesas, gradeadas, para cambiar… públicas o privadas, como quieras.',
-      co2h: 'Progreso por set', co2p: 'Un porcentaje por colección y la lista de las cartas que te faltan.',
-      co3h: 'Valor total al día', co3p: 'Raw y gradeado, en euros o en dólares, con la tendencia de las últimas semanas.',
-      'a.tag': 'Catálogo propio', 'a.eyebrow': 'El catálogo', 'a.h2': 'Hecha para las cartas que las otras apps no ven',
-      'a.p1': 'La mayoría de escáneres están pensados para el mercado americano: catálogo en inglés y precios en dólares. Talaiot tiene catálogo propio en dos bloques: Internacional, con inglés y los idiomas europeos y precio en euros; y Asia, con Japón y Corea por un lado y China por otro, con sus colecciones exclusivas.',
-      'a.bigl': 'cartas · Internacional · Japón · Corea · China',
-      'com.eyebrow': 'Comunidad', 'com.h2': 'Coleccionar es mejor acompañado', 'com.lead': 'Perfil, colecciones públicas, seguidores y chat con cartas dentro. Todo gratis y todo opcional.',
-      c1h: 'Perfil de coleccionista', c1p: 'Tu perfil con tus cartas, tu descripción y tus colecciones públicas.',
-      c2h: 'Colecciones públicas', c2p: 'Decide qué carpetas se ven y explora las de otros coleccionistas.',
-      c3h: 'Sigue a quien quieras', c3p: 'Seguidores y seguidos, como en cualquier red, pero solo de cartas.',
-      c4h: 'Chat con cartas dentro', c4p: 'Envía una carta por mensaje y abre su ficha desde el propio chat.',
-      'p.eyebrow': 'Talaiot Pro', 'p.h2': 'Lo importante es gratis. Lo de coleccionista serio, 2,99 € al mes.', 'p.free': 'Gratis', 'p.price0': '0 €', 'p.price': '2,99 €', 'p.tag': '7 días gratis', 'p.per': '/ mes', 'p.annual': 'o 29,99 € al año', 'p.annualSub': '· 2,50 € al mes · ahorras un 16 %',
-      pf1: 'Escáner de cartas, una a una y sin límite', pf2: 'Todos los precios de mercado, en euros y en dólares', pf3: 'Catálogo completo y colección sin límite', pf4: 'Perfil, colecciones públicas y chat', pf5: 'Sin anuncios', 'p.freenote': 'Y se puede usar sin cuenta.',
-      pp1: 'Valor gradeado por compañía y nota: PSA, BGS, CGC, ACE…', pp2: 'Escaneo múltiple: varias cartas a la vez, en vivo', pp3: 'Página de álbum de una foto: 2×2, 3×3 o 4×4', pp4: 'Gráficas de evolución de tu colección y del mercado', pp5: 'Alertas cuando una carta de tu lista de deseos baja de precio', 'p.pronote': 'Prueba gratis de 7 días en el plan mensual. Sin permanencia, se cancela desde la tienda.',
-      'q.eyebrow': 'Preguntas', 'q.h2': 'Lo que suelen preguntar',
-      'c.h2': 'Empieza con lo que tengas en la mesa.', 'c.p': 'Una carta suelta o el archivador entero. Gratis, sin anuncios y sin cuenta obligatoria.',
-      'ft.privacy': 'Privacidad', 'ft.terms': 'Términos de uso', 'ft.delete': 'Borrar tu cuenta', 'ft.contact': 'Contacto',
-      'ft.disc': 'Talaiot™ es una herramienta independiente para coleccionistas. No está afiliada, asociada ni patrocinada por The Pokémon Company, Nintendo, Creatures, Game Freak ni Wizards of the Coast. Todas las marcas y nombres de productos pertenecen a sus respectivos propietarios y se usan solo con fines identificativos. Los precios provienen de fuentes públicas de mercado y son orientativos. © 2026 Talaiot.',
-      'w.claim1': 'Carta a carta,', 'w.claim2': 'lo que construyes permanece.', 'ft.made': 'Carta a carta, lo que construyes permanece.', 'w.eyebrow': 'Talaiot', 'w.lead': 'Un talaiot es una torre de piedra que se levantó piedra a piedra y sigue en pie tres mil años después.', 'ft.story': 'Escáner de cartas TCG · Precios · Colecciones · Comunidad', 'q1': '¿Es gratis?', 'a1': 'Sí. Escanear carta a carta, ver precios, organizar la colección y toda la parte social son gratis y sin anuncios. Talaiot Pro añade los precios gradeados, el escaneo múltiple y de página de álbum, las gráficas y las alertas, con 7 días de prueba.', 'q2': '¿Está en iPhone y en Android?', 'a2': 'Sí, en los dos y con las mismas funciones. Con la cuenta, tu colección se sincroniza entre dispositivos.', 'q3': '¿Qué cartas reconoce?', 'a3': 'Cartas Pokémon en inglés y en los idiomas europeos, y también japonesas, coreanas y chinas, incluidas las colecciones exclusivas de China. Lee el código de set y el número y, si no se ven, compara la ilustración. Todo ocurre en tu móvil: las fotos no se suben a ningún servidor.', 'q4': '¿De dónde salen los precios y cada cuánto se actualizan?', 'a4': 'De Cardmarket (euros) y TCGplayer (dólares), actualizados de forma continua; las cartas asiáticas llevan su propia fuente. Los gradeados, de ventas reales por compañía y nota. Son orientativos: el mercado manda.', 'q5': '¿Distingue tiradas y cartas gradeadas?', 'a5': 'Sí. Normal, reverse, holo y el resto de tiradas tienen su propio precio. Con Talaiot Pro ves además el valor gradeado por compañía y nota (PSA, BGS, CGC, ACE, SGC y TAG) y guardas cada carta como raw o gradeada.', 'q6': '¿Hace falta cuenta?', 'a6': 'No. Puedes entrar como invitado y usarla. La cuenta guarda la colección en la nube, la sincroniza entre dispositivos y abre la parte social.', 'q7': '¿Puedo exportar mi colección?', 'a7': 'Sí, a un CSV con nombre, set, número, idioma, tirada, estado, cantidad y valor. La colección es tuya.', 'q8': '¿Cómo cancelo Talaiot Pro?', 'a8': 'Desde los ajustes de suscripciones de tu App Store o Google Play, cuando quieras. Si cancelas durante los 7 días de prueba, no se cobra nada.', 'q9': '¿Talaiot es de Pokémon?', 'a9': 'No. Talaiot™ es una app independiente. No está afiliada, asociada ni patrocinada por The Pokémon Company, Nintendo, Creatures ni Game Freak.'
+      "title": "Talaiot · Escáner de cartas TCG",
+      "nav.how": "Cómo funciona",
+      "nav.prices": "Precios",
+      "nav.collection": "Colección",
+      "nav.community": "Comunidad",
+      "nav.premium": "Talaiot Pro",
+      "nav.why": "Por qué Talaiot",
+      "nav.faq": "Preguntas",
+      "nav.cta": "Descargar",
+      "hero.tag": "iPhone · Android",
+      "hero.eyebrow": "Escáner de cartas TCG",
+      "hero.h1a": "Escanea tus cartas.",
+      "hero.h1b": "Mira lo que valen.",
+      "hero.claim": "Carta a carta, lo que construyes permanece.",
+      "hero.sub": "Escáner con precio de mercado al momento, catálogo internacional y asiático, colección organizada con su valor al día, precios gradeados, alertas, y una comunidad de coleccionistas con chat. Gratis y sin anuncios.",
+      "b.ios1": "Consíguelo en el",
+      "b.and1": "DISPONIBLE EN",
+      "hero.soon": "Muy pronto en las tiendas · iPhone y Android",
+      "hero.free": "Gratis · sin anuncios · sin cuenta obligatoria",
+      "h.eyebrow": "Cómo funciona",
+      "h.h2": "Apunta, mira el precio, guárdala",
+      "h.lead": "Todo el reconocimiento ocurre en tu móvil: la foto no sale de él. Sin límite de cartas y sin cuenta obligatoria.",
+      "h.popl": "Precio de mercado",
+      "h.popt": "Pikachu ex · Raw · Cardmarket",
+      "st1h": "Apunta con la cámara",
+      "st1p": "Lee el número y el código de set impresos y, si no se ven, compara la ilustración con el catálogo. Internacional, japonesa, coreana o china.",
+      "st2h": "Mira lo que vale",
+      "st2p": "Precio de mercado en euros (Cardmarket) o en dólares (TCGplayer), por tirada: normal, reverse, holo. Con Pro, también gradeada.",
+      "st3h": "Guárdala en tu colección",
+      "st3p": "Idioma, cantidad, estado y carpeta. El valor total de tu colección se actualiza solo, día a día.",
+      "m1h": "Carta a carta",
+      "m1p": "Una carta delante de la cámara y lista. Sin límite.",
+      "m2h": "Escaneo múltiple",
+      "m2p": "Varias cartas a la vez, en vivo: apunta a la mesa y las reconoce todas de una pasada.",
+      "m3h": "Página de álbum",
+      "m3p": "Una foto a la página del álbum, de 2×2, 3×3 o 4×4, y todas las cartas entran a la vez.",
+      "chip.free": "Gratis",
+      "pr.eyebrow": "Precios",
+      "pr.h2": "Lo que vale hoy, y hacia dónde va",
+      "pr.lead": "Precios de mercado de Cardmarket y TCGplayer, actualizados de forma continua. Son orientativos: el mercado manda.",
+      "pr1h": "Gradeadas, por compañía y nota",
+      "pr1p": "PSA, BGS, CGC, ACE, SGC y TAG: el valor de cada nota, a partir de ventas reales.",
+      "pr2h": "La evolución de tu colección",
+      "pr2p": "Gráficas del valor de tu colección y del mercado, día a día, para ver de dónde viene cada subida.",
+      "pr3h": "Radar de tendencias",
+      "pr3p": "Las cartas que más suben y más bajan en los últimos 30 días, por catálogo.",
+      "co.eyebrow": "Tu colección",
+      "co.h2": "Ordenada, valorada y completa set a set",
+      "co.lead": "Cada carta con su idioma, su tirada y su estado. Cada set con su barra: cuánto llevas y cuánto te falta.",
+      "co1h": "Carpetas",
+      "co1p": "Favoritas, japonesas, gradeadas, para cambiar… públicas o privadas, como quieras.",
+      "co2h": "Progreso por set",
+      "co2p": "Un porcentaje por colección y la lista de las cartas que te faltan.",
+      "co3h": "Valor total al día",
+      "co3p": "Raw y gradeado, en euros o en dólares, con la tendencia de las últimas semanas.",
+      "a.tag": "Catálogo propio",
+      "a.eyebrow": "El catálogo",
+      "a.h2": "Hecha para las cartas que las otras apps no ven",
+      "a.p1": "La mayoría de escáneres están pensados para el mercado americano: catálogo en inglés y precios en dólares. Talaiot tiene catálogo propio en dos bloques: Internacional, con inglés y los idiomas europeos y precio en euros; y Asia, con Japón y Corea por un lado y China por otro, con sus colecciones exclusivas.",
+      "a.bigl": "cartas · Internacional · Japón · Corea · China",
+      "com.eyebrow": "Comunidad",
+      "com.h2": "Coleccionar es mejor acompañado",
+      "com.lead": "Perfil, colecciones públicas, seguidores y chat con cartas dentro. Todo gratis y todo opcional.",
+      "c1h": "Perfil de coleccionista",
+      "c1p": "Tu perfil con tus cartas, tu descripción y tus colecciones públicas.",
+      "c2h": "Colecciones públicas",
+      "c2p": "Decide qué carpetas se ven y explora las de otros coleccionistas.",
+      "c3h": "Sigue a quien quieras",
+      "c3p": "Seguidores y seguidos, como en cualquier red, pero solo de cartas.",
+      "c4h": "Chat con cartas dentro",
+      "c4p": "Envía una carta por mensaje y abre su ficha desde el propio chat.",
+      "p.eyebrow": "Talaiot Pro",
+      "p.h2": "Lo importante es gratis. Lo de coleccionista serio, 3,99 € al mes.",
+      "p.free": "Gratis",
+      "p.price0": "0 €",
+      "p.price": "3,99 €",
+      "p.tag": "7 días gratis",
+      "p.per": "/ mes",
+      "p.annual": "o 34,99 € al año",
+      "p.annualSub": "· 2,92 € al mes · ahorras un 27 %",
+      "pf1": "Escáner de cartas, una a una y sin límite",
+      "pf2": "Todos los precios de mercado, en euros y en dólares",
+      "pf3": "Catálogo completo y colección sin límite",
+      "pf4": "Perfil, colecciones públicas y chat",
+      "pf5": "Sin anuncios",
+      "p.freenote": "Y se puede usar sin cuenta.",
+      "pp1": "Valor gradeado por compañía y nota: PSA, BGS, CGC, ACE…",
+      "pp2": "Escaneo múltiple: varias cartas a la vez, en vivo",
+      "pp3": "Página de álbum de una foto: 2×2, 3×3 o 4×4",
+      "pp4": "Gráficas de evolución de tu colección y del mercado",
+      "pp5": "Alertas cuando una carta de tu lista de deseos baja de precio",
+      "p.pronote": "Prueba gratis de 7 días en el plan mensual. Sin permanencia, se cancela desde la tienda. Precios de la zona euro: tu tienda te muestra los de tu país.",
+      "q.eyebrow": "Preguntas",
+      "q.h2": "Lo que suelen preguntar",
+      "c.h2": "Empieza con lo que tengas en la mesa.",
+      "c.p": "Una carta suelta o el archivador entero. Gratis, sin anuncios y sin cuenta obligatoria.",
+      "ft.privacy": "Privacidad",
+      "ft.terms": "Términos de uso",
+      "ft.delete": "Borrar tu cuenta",
+      "ft.contact": "Contacto",
+      "ft.disc": "Talaiot™ es una herramienta independiente para coleccionistas. No está afiliada ni asociada a The Pokémon Company, Nintendo, Creatures, Game Freak ni Wizards of the Coast, ni patrocinada por ellas. Todas las marcas y nombres de productos pertenecen a sus respectivos propietarios y se usan solo con fines identificativos. Los precios provienen de fuentes públicas de mercado y son orientativos. © 2026 Talaiot.",
+      "w.claim1": "Carta a carta,",
+      "w.claim2": "lo que construyes permanece.",
+      "ft.made": "Carta a carta, lo que construyes permanece.",
+      "w.eyebrow": "Talaiot",
+      "w.lead": "Un talaiot es una torre de piedra que se levantó piedra a piedra y sigue en pie tres mil años después.",
+      "ft.story": "Escáner de cartas TCG · Precios · Colecciones · Comunidad",
+      "q1": "¿Es gratis?",
+      "a1": "Sí. Escanear carta a carta, ver precios, organizar la colección y toda la parte social son gratis y sin anuncios. Talaiot Pro añade los precios gradeados, el escaneo múltiple y de página de álbum, las gráficas y las alertas, con 7 días de prueba.",
+      "q2": "¿Está en iPhone y en Android?",
+      "a2": "Sí, en los dos y con las mismas funciones. Con la cuenta, tu colección se sincroniza entre dispositivos.",
+      "q3": "¿Qué cartas reconoce?",
+      "a3": "Cartas Pokémon en inglés y en los idiomas europeos, y también japonesas, coreanas y chinas, incluidas las colecciones exclusivas de China. Lee el código de set y el número y, si no se ven, compara la ilustración. Todo ocurre en tu móvil: las fotos no se suben a ningún servidor.",
+      "q4": "¿De dónde salen los precios y cada cuánto se actualizan?",
+      "a4": "De Cardmarket (euros) y TCGplayer (dólares), actualizados de forma continua; las cartas asiáticas llevan su propia fuente. Los gradeados, de ventas reales por compañía y nota. Son orientativos: el mercado manda.",
+      "q5": "¿Distingue tiradas y cartas gradeadas?",
+      "a5": "Sí. Normal, reverse, holo y el resto de tiradas tienen su propio precio. Con Talaiot Pro ves además el valor gradeado por compañía y nota (PSA, BGS, CGC, ACE, SGC y TAG) y guardas cada carta como raw o gradeada.",
+      "q6": "¿Hace falta cuenta?",
+      "a6": "No. Puedes entrar como invitado y usarla. La cuenta guarda la colección en la nube, la sincroniza entre dispositivos y abre la parte social.",
+      "q7": "¿Puedo exportar mi colección?",
+      "a7": "Sí, a un CSV con nombre, set, número, idioma, tirada, estado, cantidad y valor. La colección es tuya.",
+      "q8": "¿Cómo cancelo Talaiot Pro?",
+      "a8": "Desde los ajustes de suscripciones de tu App Store o Google Play, cuando quieras. Si cancelas durante los 7 días de prueba, no se cobra nada.",
+      "q9": "¿Talaiot es de Pokémon?",
+      "a9": "No. Talaiot™ es una app independiente. No está afiliada, asociada ni patrocinada por The Pokémon Company, Nintendo, Creatures ni Game Freak.",
+      "meta.desc": "Escanea tus cartas con la cámara y mira lo que valen, también las japonesas, coreanas y chinas. Precios de mercado, colección organizada y comunidad. Gratis y sin anuncios.",
+      "og.desc": "Escanea tus cartas y mira lo que valen. Carta a carta, lo que construyes permanece.",
+      "alt.coleccion": "Mi colección: valor total, cartas, escaneadas, gradeadas y deseadas",
+      "alt.ficha": "Ficha de una carta con su precio de mercado",
+      "alt.colecciones": "Catálogo de colecciones con el progreso de cada set",
+      "alt.chat": "Chat con una carta enviada dentro del mensaje",
+      "alt.social": "Hub social con los coleccionistas que sigues",
+      "alt.favoritas": "Carpeta de favoritas con el valor de cada carta",
+      "alt.set": "El set Pitch Black con todas sus cartas",
+      "alt.perfil": "Perfil de otra coleccionista con su colección pública",
+      "aria.sections": "Secciones",
+      "aria.lang": "Idioma",
+      "aria.carousel": "Pantallas de la app",
+      "aria.prev": "Anterior",
+      "aria.next": "Siguiente",
+      "aria.slide": "Pantalla {n}"
     },
     ca: {
-      title: 'Talaiot · Escàner de cartes TCG',
-      'nav.how': 'Com funciona', 'nav.prices': 'Preus', 'nav.collection': 'Col·lecció', 'nav.community': 'Comunitat', 'nav.premium': 'Talaiot Pro', 'nav.why': 'Per què Talaiot', 'nav.faq': 'Preguntes', 'nav.cta': 'Descarregar',
-      'hero.tag': 'iPhone · Android', 'hero.eyebrow': 'Escàner de cartes TCG', 'hero.h1a': 'Escaneja les teves cartes.', 'hero.h1b': 'Mira què valen.',
-      'hero.claim': 'Carta a carta, el que construeixes perdura.',
-      'hero.sub': 'Escàner amb preu de mercat a l\'instant, catàleg internacional i asiàtic, col·lecció ordenada amb el valor al dia, preus gradejats, avisos, i una comunitat de col·leccionistes amb xat. Gratis i sense anuncis.',
-      'b.ios1': "Descarrega-la a l'", 'b.and1': 'DISPONIBLE A', 'hero.soon': 'Molt aviat a les botigues · iPhone i Android',
-      'hero.free': 'Gratis · sense anuncis · sense compte obligatori',
-      'h.eyebrow': 'Com funciona', 'h.h2': 'Apunta, mira el preu, desa-la', 'h.lead': 'Tot el reconeixement passa al teu mòbil: la foto no en surt. Sense límit de cartes i sense compte obligatori.',
-      'h.popl': 'Preu de mercat', 'h.popt': 'Pikachu ex · Raw · Cardmarket',
-      st1h: 'Apunta amb la càmera', st1p: 'Llegeix el número i el codi de set impresos i, si no es veuen, compara la il·lustració amb el catàleg. Internacional, japonesa, coreana o xinesa.',
-      st2h: 'Mira què val', st2p: 'Preu de mercat en euros (Cardmarket) o en dòlars (TCGplayer), per tirada: normal, reverse, holo. Amb Pro, també gradejada.',
-      st3h: 'Desa-la a la teva col·lecció', st3p: 'Idioma, quantitat, estat i carpeta. El valor total de la col·lecció s\'actualitza sol, dia a dia.',
-      m1h: 'Carta a carta', m1p: 'Una carta davant la càmera i llesta. Sense límit.',
-      m2h: 'Escaneig múltiple', m2p: 'Diverses cartes alhora, en viu: apunta a la taula i les reconeix totes d\'una passada.',
-      m3h: 'Pàgina d\'àlbum', m3p: 'Una foto a la pàgina de l\'àlbum, de 2×2, 3×3 o 4×4, i totes les cartes entren alhora.',
-      'chip.free': 'Gratis',
-      'pr.eyebrow': 'Preus', 'pr.h2': 'El que val avui, i cap a on va', 'pr.lead': 'Preus de mercat de Cardmarket i TCGplayer, actualitzats de manera contínua. Són orientatius: el mercat mana.',
-      pr1h: 'Gradejades, per companyia i nota', pr1p: 'PSA, BGS, CGC, ACE, SGC i TAG: el valor de cada nota, a partir de vendes reals.',
-      pr2h: 'L\'evolució de la teva col·lecció', pr2p: 'Gràfiques del valor de la col·lecció i del mercat, dia a dia, per veure d\'on ve cada pujada.',
-      pr3h: 'Radar de tendències', pr3p: 'Les cartes que més pugen i més baixen els darrers 30 dies, per catàleg.',
-      'co.eyebrow': 'La teva col·lecció', 'co.h2': 'Ordenada, valorada i completa set a set', 'co.lead': 'Cada carta amb el seu idioma, la seva tirada i el seu estat. Cada set amb la seva barra: quant portes i quant et falta.',
-      co1h: 'Carpetes', co1p: 'Preferides, japoneses, gradejades, per canviar… públiques o privades, com vulguis.',
-      co2h: 'Progrés per set', co2p: 'Un percentatge per col·lecció i la llista de les cartes que et falten.',
-      co3h: 'Valor total al dia', co3p: 'Raw i gradejat, en euros o en dòlars, amb la tendència de les darreres setmanes.',
-      'a.tag': 'Catàleg propi', 'a.eyebrow': 'El catàleg', 'a.h2': 'Feta per a les cartes que les altres apps no veuen',
-      'a.p1': 'La majoria d\'escàners estan pensats per al mercat americà: catàleg en anglès i preus en dòlars. Talaiot té catàleg propi en dos blocs: Internacional, amb anglès i els idiomes europeus i preu en euros; i Àsia, amb Japó i Corea per una banda i la Xina per l\'altra, amb les seves col·leccions exclusives.',
-      'a.bigl': 'cartes · Internacional · Japó · Corea · Xina',
-      'com.eyebrow': 'Comunitat', 'com.h2': 'Col·leccionar és millor acompanyat', 'com.lead': 'Perfil, col·leccions públiques, seguidors i xat amb cartes a dins. Tot gratis i tot opcional.',
-      c1h: 'Perfil de col·leccionista', c1p: 'El teu perfil amb les teves cartes, la teva descripció i les teves col·leccions públiques.',
-      c2h: 'Col·leccions públiques', c2p: 'Decideix quines carpetes es veuen i explora les d\'altres col·leccionistes.',
-      c3h: 'Segueix qui vulguis', c3p: 'Seguidors i seguits, com a qualsevol xarxa, però només de cartes.',
-      c4h: 'Xat amb cartes a dins', c4p: 'Envia una carta per missatge i obre\'n la fitxa des del mateix xat.',
-      'p.eyebrow': 'Talaiot Pro', 'p.h2': 'L\'important és gratis. El de col·leccionista seriós, 2,99 € al mes.', 'p.free': 'Gratis', 'p.price0': '0 €', 'p.price': '2,99 €', 'p.tag': '7 dies gratis', 'p.per': '/ mes', 'p.annual': 'o 29,99 € l\'any', 'p.annualSub': '· 2,50 € al mes · estalvies un 16 %',
-      pf1: 'Escàner de cartes, una a una i sense límit', pf2: 'Tots els preus de mercat, en euros i en dòlars', pf3: 'Catàleg complet i col·lecció sense límit', pf4: 'Perfil, col·leccions públiques i xat', pf5: 'Sense anuncis', 'p.freenote': 'I es pot fer servir sense compte.',
-      pp1: 'Valor gradejat per companyia i nota: PSA, BGS, CGC, ACE…', pp2: 'Escaneig múltiple: diverses cartes alhora, en viu', pp3: 'Pàgina d\'àlbum d\'una foto: 2×2, 3×3 o 4×4', pp4: 'Gràfiques d\'evolució de la teva col·lecció i del mercat', pp5: 'Avisos quan una carta de la teva llista de desitjos baixa de preu', 'p.pronote': 'Prova gratis de 7 dies al pla mensual. Sense permanència, es cancel·la des de la botiga.',
-      'q.eyebrow': 'Preguntes', 'q.h2': 'El que solen preguntar',
-      'c.h2': 'Comença amb el que tinguis a la taula.', 'c.p': 'Una carta solta o l\'arxivador sencer. Gratis, sense anuncis i sense compte obligatori.',
-      'ft.privacy': 'Privacitat', 'ft.terms': 'Termes d\'ús', 'ft.delete': 'Esborrar el teu compte', 'ft.contact': 'Contacte',
-      'ft.disc': 'Talaiot™ és una eina independent per a col·leccionistes. No està afiliada, associada ni patrocinada per The Pokémon Company, Nintendo, Creatures, Game Freak ni Wizards of the Coast. Totes les marques i noms de productes pertanyen als seus propietaris i s\'usen només amb finalitats identificatives. Els preus provenen de fonts públiques de mercat i són orientatius. © 2026 Talaiot.',
-      'w.claim1': 'Carta a carta,', 'w.claim2': 'el que construeixes perdura.', 'ft.made': 'Carta a carta, el que construeixes perdura.', 'w.eyebrow': 'Talaiot', 'w.lead': 'Un talaiot és una torre de pedra que es va aixecar pedra a pedra i encara s\'aguanta dreta tres mil anys després.', 'ft.story': 'Escàner de cartes TCG · Preus · Col·leccions · Comunitat', 'q1': 'És gratis?', 'a1': 'Sí. Escanejar carta a carta, veure preus, ordenar la col·lecció i tota la part social són gratis i sense anuncis. Talaiot Pro afegeix els preus gradejats, l\'escaneig múltiple i de pàgina d\'àlbum, les gràfiques i els avisos, amb 7 dies de prova.', 'q2': 'És a iPhone i a Android?', 'a2': 'Sí, als dos i amb les mateixes funcions. Amb el compte, la col·lecció se sincronitza entre dispositius.', 'q3': 'Quines cartes reconeix?', 'a3': 'Cartes Pokémon en anglès i en els idiomes europeus, i també japoneses, coreanes i xineses, incloses les col·leccions exclusives de la Xina. Llegeix el codi de set i el número i, si no es veuen, compara la il·lustració. Tot passa al teu mòbil: les fotos no es pugen a cap servidor.', 'q4': 'D\'on surten els preus i cada quant s\'actualitzen?', 'a4': 'De Cardmarket (euros) i TCGplayer (dòlars), actualitzats de manera contínua; les cartes asiàtiques tenen la seva pròpia font. Els gradejats, de vendes reals per companyia i nota. Són orientatius: el mercat mana.', 'q5': 'Distingeix tirades i cartes gradejades?', 'a5': 'Sí. Normal, reverse, holo i la resta de tirades tenen el seu propi preu. Amb Talaiot Pro veus a més el valor gradejat per companyia i nota (PSA, BGS, CGC, ACE, SGC i TAG) i deses cada carta com a raw o gradejada.', 'q6': 'Cal compte?', 'a6': 'No. Pots entrar com a convidat i fer-la servir. El compte guarda la col·lecció al núvol, la sincronitza entre dispositius i obre la part social.', 'q7': 'Puc exportar la meva col·lecció?', 'a7': 'Sí, a un CSV amb nom, set, número, idioma, tirada, estat, quantitat i valor. La col·lecció és teva.', 'q8': 'Com cancel·lo Talaiot Pro?', 'a8': 'Des dels ajustos de subscripcions del teu App Store o Google Play, quan vulguis. Si cancel·les durant els 7 dies de prova, no es cobra res.', 'q9': 'Talaiot és de Pokémon?', 'a9': 'No. Talaiot™ és una app independent. No està afiliada, associada ni patrocinada per The Pokémon Company, Nintendo, Creatures ni Game Freak.'
+      "title": "Talaiot · Escàner de cartes TCG",
+      "nav.how": "Com funciona",
+      "nav.prices": "Preus",
+      "nav.collection": "Col·lecció",
+      "nav.community": "Comunitat",
+      "nav.premium": "Talaiot Pro",
+      "nav.why": "Per què Talaiot",
+      "nav.faq": "Preguntes",
+      "nav.cta": "Descarregar",
+      "hero.tag": "iPhone · Android",
+      "hero.eyebrow": "Escàner de cartes TCG",
+      "hero.h1a": "Escaneja les teves cartes.",
+      "hero.h1b": "Mira què valen.",
+      "hero.claim": "Carta a carta, el que construeixes perdura.",
+      "hero.sub": "Escàner amb preu de mercat a l'instant, catàleg internacional i asiàtic, col·lecció ordenada amb el valor al dia, preus gradejats, avisos, i una comunitat de col·leccionistes amb xat. Gratis i sense anuncis.",
+      "b.ios1": "Descarrega-la a l'",
+      "b.and1": "DISPONIBLE A",
+      "hero.soon": "Molt aviat a les botigues · iPhone i Android",
+      "hero.free": "Gratis · sense anuncis · sense compte obligatori",
+      "h.eyebrow": "Com funciona",
+      "h.h2": "Apunta, mira el preu, desa-la",
+      "h.lead": "Tot el reconeixement passa al teu mòbil: la foto no en surt. Sense límit de cartes i sense compte obligatori.",
+      "h.popl": "Preu de mercat",
+      "h.popt": "Pikachu ex · Raw · Cardmarket",
+      "st1h": "Apunta amb la càmera",
+      "st1p": "Llegeix el número i el codi de set impresos i, si no es veuen, compara la il·lustració amb el catàleg. Internacional, japonesa, coreana o xinesa.",
+      "st2h": "Mira què val",
+      "st2p": "Preu de mercat en euros (Cardmarket) o en dòlars (TCGplayer), per tirada: normal, reverse, holo. Amb Pro, també gradejada.",
+      "st3h": "Desa-la a la teva col·lecció",
+      "st3p": "Idioma, quantitat, estat i carpeta. El valor total de la col·lecció s'actualitza sol, dia a dia.",
+      "m1h": "Carta a carta",
+      "m1p": "Una carta davant la càmera i llesta. Sense límit.",
+      "m2h": "Escaneig múltiple",
+      "m2p": "Diverses cartes alhora, en viu: apunta a la taula i les reconeix totes d'una passada.",
+      "m3h": "Pàgina d'àlbum",
+      "m3p": "Una foto a la pàgina de l'àlbum, de 2×2, 3×3 o 4×4, i totes les cartes entren alhora.",
+      "chip.free": "Gratis",
+      "pr.eyebrow": "Preus",
+      "pr.h2": "El que val avui, i cap a on va",
+      "pr.lead": "Preus de mercat de Cardmarket i TCGplayer, actualitzats de manera contínua. Són orientatius: el mercat mana.",
+      "pr1h": "Gradejades, per companyia i nota",
+      "pr1p": "PSA, BGS, CGC, ACE, SGC i TAG: el valor de cada nota, a partir de vendes reals.",
+      "pr2h": "L'evolució de la teva col·lecció",
+      "pr2p": "Gràfiques del valor de la col·lecció i del mercat, dia a dia, per veure d'on ve cada pujada.",
+      "pr3h": "Radar de tendències",
+      "pr3p": "Les cartes que més pugen i més baixen els darrers 30 dies, per catàleg.",
+      "co.eyebrow": "La teva col·lecció",
+      "co.h2": "Ordenada, valorada i completa set a set",
+      "co.lead": "Cada carta amb el seu idioma, la seva tirada i el seu estat. Cada set amb la seva barra: quant portes i quant et falta.",
+      "co1h": "Carpetes",
+      "co1p": "Preferides, japoneses, gradejades, per canviar… públiques o privades, com vulguis.",
+      "co2h": "Progrés per set",
+      "co2p": "Un percentatge per col·lecció i la llista de les cartes que et falten.",
+      "co3h": "Valor total al dia",
+      "co3p": "Raw i gradejat, en euros o en dòlars, amb la tendència de les darreres setmanes.",
+      "a.tag": "Catàleg propi",
+      "a.eyebrow": "El catàleg",
+      "a.h2": "Feta per a les cartes que les altres apps no veuen",
+      "a.p1": "La majoria d'escàners estan pensats per al mercat americà: catàleg en anglès i preus en dòlars. Talaiot té catàleg propi en dos blocs: Internacional, amb anglès i els idiomes europeus i preu en euros; i Àsia, amb Japó i Corea per una banda i la Xina per l'altra, amb les seves col·leccions exclusives.",
+      "a.bigl": "cartes · Internacional · Japó · Corea · Xina",
+      "com.eyebrow": "Comunitat",
+      "com.h2": "Col·leccionar és millor acompanyat",
+      "com.lead": "Perfil, col·leccions públiques, seguidors i xat amb cartes a dins. Tot gratis i tot opcional.",
+      "c1h": "Perfil de col·leccionista",
+      "c1p": "El teu perfil amb les teves cartes, la teva descripció i les teves col·leccions públiques.",
+      "c2h": "Col·leccions públiques",
+      "c2p": "Decideix quines carpetes es veuen i explora les d'altres col·leccionistes.",
+      "c3h": "Segueix qui vulguis",
+      "c3p": "Seguidors i seguits, com a qualsevol xarxa, però només de cartes.",
+      "c4h": "Xat amb cartes a dins",
+      "c4p": "Envia una carta per missatge i obre'n la fitxa des del mateix xat.",
+      "p.eyebrow": "Talaiot Pro",
+      "p.h2": "L'important és gratis. El de col·leccionista seriós, 3,99 € al mes.",
+      "p.free": "Gratis",
+      "p.price0": "0 €",
+      "p.price": "3,99 €",
+      "p.tag": "7 dies gratis",
+      "p.per": "/ mes",
+      "p.annual": "o 34,99 € l'any",
+      "p.annualSub": "· 2,92 € al mes · estalvies un 27 %",
+      "pf1": "Escàner de cartes, una a una i sense límit",
+      "pf2": "Tots els preus de mercat, en euros i en dòlars",
+      "pf3": "Catàleg complet i col·lecció sense límit",
+      "pf4": "Perfil, col·leccions públiques i xat",
+      "pf5": "Sense anuncis",
+      "p.freenote": "I es pot fer servir sense compte.",
+      "pp1": "Valor gradejat per companyia i nota: PSA, BGS, CGC, ACE…",
+      "pp2": "Escaneig múltiple: diverses cartes alhora, en viu",
+      "pp3": "Pàgina d'àlbum d'una foto: 2×2, 3×3 o 4×4",
+      "pp4": "Gràfiques d'evolució de la teva col·lecció i del mercat",
+      "pp5": "Avisos quan una carta de la teva llista de desitjos baixa de preu",
+      "p.pronote": "Prova gratis de 7 dies al pla mensual. Sense permanència, es cancel·la des de la botiga. Preus de la zona euro: la botiga et mostra els del teu país.",
+      "q.eyebrow": "Preguntes",
+      "q.h2": "El que solen preguntar",
+      "c.h2": "Comença amb el que tinguis a la taula.",
+      "c.p": "Una carta solta o l'arxivador sencer. Gratis, sense anuncis i sense compte obligatori.",
+      "ft.privacy": "Privacitat",
+      "ft.terms": "Termes d'ús",
+      "ft.delete": "Esborrar el teu compte",
+      "ft.contact": "Contacte",
+      "ft.disc": "Talaiot™ és una eina independent per a col·leccionistes. No està afiliada ni associada a The Pokémon Company, Nintendo, Creatures, Game Freak ni Wizards of the Coast, ni patrocinada per aquestes empreses. Totes les marques i noms de productes pertanyen als seus propietaris i s'usen només amb finalitats identificatives. Els preus provenen de fonts públiques de mercat i són orientatius. © 2026 Talaiot.",
+      "w.claim1": "Carta a carta,",
+      "w.claim2": "el que construeixes perdura.",
+      "ft.made": "Carta a carta, el que construeixes perdura.",
+      "w.eyebrow": "Talaiot",
+      "w.lead": "Un talaiot és una torre de pedra que es va aixecar pedra a pedra i encara s'aguanta dreta tres mil anys després.",
+      "ft.story": "Escàner de cartes TCG · Preus · Col·leccions · Comunitat",
+      "q1": "És gratis?",
+      "a1": "Sí. Escanejar carta a carta, veure preus, ordenar la col·lecció i tota la part social són gratis i sense anuncis. Talaiot Pro afegeix els preus gradejats, l'escaneig múltiple i de pàgina d'àlbum, les gràfiques i els avisos, amb 7 dies de prova.",
+      "q2": "És a iPhone i a Android?",
+      "a2": "Sí, als dos i amb les mateixes funcions. Amb el compte, la col·lecció se sincronitza entre dispositius.",
+      "q3": "Quines cartes reconeix?",
+      "a3": "Cartes Pokémon en anglès i en els idiomes europeus, i també japoneses, coreanes i xineses, incloses les col·leccions exclusives de la Xina. Llegeix el codi de set i el número i, si no es veuen, compara la il·lustració. Tot passa al teu mòbil: les fotos no es pugen a cap servidor.",
+      "q4": "D'on surten els preus i cada quant s'actualitzen?",
+      "a4": "De Cardmarket (euros) i TCGplayer (dòlars), actualitzats de manera contínua; les cartes asiàtiques tenen la seva pròpia font. Els gradejats, de vendes reals per companyia i nota. Són orientatius: el mercat mana.",
+      "q5": "Distingeix tirades i cartes gradejades?",
+      "a5": "Sí. Normal, reverse, holo i la resta de tirades tenen el seu propi preu. Amb Talaiot Pro veus a més el valor gradejat per companyia i nota (PSA, BGS, CGC, ACE, SGC i TAG) i deses cada carta com a raw o gradejada.",
+      "q6": "Cal compte?",
+      "a6": "No. Pots entrar com a convidat i fer-la servir. El compte guarda la col·lecció al núvol, la sincronitza entre dispositius i obre la part social.",
+      "q7": "Puc exportar la meva col·lecció?",
+      "a7": "Sí, a un CSV amb nom, set, número, idioma, tirada, estat, quantitat i valor. La col·lecció és teva.",
+      "q8": "Com cancel·lo Talaiot Pro?",
+      "a8": "Des dels ajustos de subscripcions del teu App Store o Google Play, quan vulguis. Si cancel·les durant els 7 dies de prova, no es cobra res.",
+      "q9": "Talaiot és de Pokémon?",
+      "a9": "No. Talaiot™ és una app independent. No està afiliada, associada ni patrocinada per The Pokémon Company, Nintendo, Creatures ni Game Freak.",
+      "meta.desc": "Escaneja les teves cartes amb la càmera i mira què valen, també les japoneses, coreanes i xineses. Preus de mercat, col·lecció organitzada i comunitat. Gratis i sense anuncis.",
+      "og.desc": "Escaneja les teves cartes i mira què valen. Carta a carta, el que construeixes perdura.",
+      "alt.coleccion": "La meva col·lecció: valor total, cartes, escanejades, gradejades i desitjades",
+      "alt.ficha": "Fitxa d'una carta amb el seu preu de mercat",
+      "alt.colecciones": "Catàleg de col·leccions amb el progrés de cada set",
+      "alt.chat": "Xat amb una carta enviada dins del missatge",
+      "alt.social": "Espai social amb els col·leccionistes que segueixes",
+      "alt.favoritas": "Carpeta de preferides amb el valor de cada carta",
+      "alt.set": "El set Pitch Black amb totes les seves cartes",
+      "alt.perfil": "Perfil d'una altra col·leccionista amb la seva col·lecció pública",
+      "aria.sections": "Seccions",
+      "aria.lang": "Idioma",
+      "aria.carousel": "Pantalles de l'app",
+      "aria.prev": "Anterior",
+      "aria.next": "Següent",
+      "aria.slide": "Pantalla {n}"
     },
     en: {
-      title: 'Talaiot · TCG Card Scanner',
-      'nav.how': 'How it works', 'nav.prices': 'Prices', 'nav.collection': 'Collection', 'nav.community': 'Community', 'nav.premium': 'Talaiot Pro', 'nav.why': 'Why Talaiot', 'nav.faq': 'FAQ', 'nav.cta': 'Download',
-      'hero.tag': 'iPhone · Android', 'hero.eyebrow': 'TCG card scanner', 'hero.h1a': 'Scan your cards.', 'hero.h1b': 'See what they\'re worth.',
-      'hero.claim': 'Card by card, what you build remains.',
-      'hero.sub': 'A scanner with instant market prices, an international and Asian catalogue, an organised collection with its value kept up to date, graded prices, alerts, and a community of collectors with chat. Free and ad-free.',
-      'b.ios1': 'Download on the', 'b.and1': 'GET IT ON', 'hero.soon': 'Coming soon to the stores · iPhone and Android',
-      'hero.free': 'Free · no ads · no account required',
-      'h.eyebrow': 'How it works', 'h.h2': 'Point, see the price, save it', 'h.lead': 'All recognition happens on your phone: the photo never leaves it. No card limit and no account required.',
-      'h.popl': 'Market price', 'h.popt': 'Pikachu ex · Raw · Cardmarket',
-      st1h: 'Point the camera', st1p: 'It reads the printed number and set code and, when they can\'t be seen, matches the artwork against the catalogue. International, Japanese, Korean or Chinese.',
-      st2h: 'See what it\'s worth', st2p: 'Market price in euros (Cardmarket) or dollars (TCGplayer), per printing: normal, reverse, holo. With Pro, graded too.',
-      st3h: 'Save it to your collection', st3p: 'Language, quantity, condition and folder. Your collection\'s total value updates by itself, day by day.',
-      m1h: 'One card at a time', m1p: 'A card in front of the camera and done. No limit.',
-      m2h: 'Multi-scan', m2p: 'Several cards at once, live: point at the table and it picks them all up in one pass.',
-      m3h: 'Binder page', m3p: 'One photo of a binder page, 2×2, 3×3 or 4×4, and every card goes in at once.',
-      'chip.free': 'Free',
-      'pr.eyebrow': 'Prices', 'pr.h2': 'What it\'s worth today, and where it\'s heading', 'pr.lead': 'Market prices from Cardmarket and TCGplayer, refreshed continuously. They\'re a guide: the market rules.',
-      pr1h: 'Graded, by company and grade', pr1p: 'PSA, BGS, CGC, ACE, SGC and TAG: the value of every grade, from real sales.',
-      pr2h: 'How your collection evolves', pr2p: 'Charts of your collection\'s value and the market, day by day, to see where each rise comes from.',
-      pr3h: 'Trend radar', pr3p: 'The cards rising and falling the most over the last 30 days, per catalogue.',
-      'co.eyebrow': 'Your collection', 'co.h2': 'Organised, valued and complete, set by set', 'co.lead': 'Every card with its language, printing and condition. Every set with its bar: how far you\'ve got and what\'s missing.',
-      co1h: 'Folders', co1p: 'Favourites, Japanese, graded, for trade… public or private, your call.',
-      co2h: 'Progress per set', co2p: 'A percentage per set and the list of cards you\'re missing.',
-      co3h: 'Total value, up to date', co3p: 'Raw and graded, in euros or dollars, with the trend of the last few weeks.',
-      'a.tag': 'Own catalogue', 'a.eyebrow': 'The catalogue', 'a.h2': 'Built for the cards other apps can\'t see',
-      'a.p1': 'Most scanners are built for the American market: English catalogue, dollar prices. Talaiot has its own catalogue in two blocks: International, with English and the European languages and euro prices; and Asia, with Japan and Korea on one side and China on the other, exclusive Chinese sets included.',
-      'a.bigl': 'cards · International · Japan · Korea · China',
-      'com.eyebrow': 'Community', 'com.h2': 'Collecting is better together', 'com.lead': 'Profile, public collections, followers and chat with cards inside. All free and all optional.',
-      c1h: 'Collector profile', c1p: 'Your profile with your cards, your bio and your public collections.',
-      c2h: 'Public collections', c2p: 'Choose which folders are visible and browse other collectors\'.',
-      c3h: 'Follow anyone', c3p: 'Followers and following, like any network, but cards only.',
-      c4h: 'Chat with cards inside', c4p: 'Send a card in a message and open its details right from the chat.',
-      'p.eyebrow': 'Talaiot Pro', 'p.h2': 'What matters is free. The serious-collector part, €2.99 a month.', 'p.free': 'Free', 'p.price0': '€0', 'p.price': '€2.99', 'p.tag': '7 days free', 'p.per': '/ month', 'p.annual': 'or €29.99 a year', 'p.annualSub': '· €2.50 a month · save 16%',
-      pf1: 'Card scanner, one at a time, no limits', pf2: 'All market prices, in euros and dollars', pf3: 'Full catalogue and unlimited collection', pf4: 'Profile, public collections and chat', pf5: 'No ads', 'p.freenote': 'And it works without an account.',
-      pp1: 'Graded value by company and grade: PSA, BGS, CGC, ACE…', pp2: 'Multi-scan: several cards at once, live', pp3: 'Binder page from one photo: 2×2, 3×3 or 4×4', pp4: 'Charts of your collection and the market over time', pp5: 'Alerts when a wishlist card drops in price', 'p.pronote': 'Free 7-day trial on the monthly plan. No commitment, cancel from the store.',
-      'q.eyebrow': 'FAQ', 'q.h2': 'What people ask',
-      'c.h2': 'Start with whatever is on the table.', 'c.p': 'A single card or the whole binder. Free, no ads and no account required.',
-      'ft.privacy': 'Privacy', 'ft.terms': 'Terms of use', 'ft.delete': 'Delete your account', 'ft.contact': 'Contact',
-      'ft.disc': 'Talaiot™ is an independent tool for collectors. It is not affiliated with, associated with or sponsored by The Pokémon Company, Nintendo, Creatures, Game Freak or Wizards of the Coast. All trademarks and product names belong to their respective owners and are used for identification only. Prices come from public market sources and are indicative. © 2026 Talaiot.',
-      'w.claim1': 'Card by card,', 'w.claim2': 'what you build remains.', 'ft.made': 'Card by card, what you build remains.', 'w.eyebrow': 'Talaiot', 'w.lead': 'A talaiot is a stone tower raised stone by stone, still standing three thousand years later.', 'ft.story': 'TCG card scanner · Prices · Collections · Community', 'q1': 'Is it free?', 'a1': 'Yes. Scanning one card at a time, prices, organising your collection and the whole social side are free and ad-free. Talaiot Pro adds graded prices, multi-scan and binder-page scanning, charts and alerts, with a 7-day trial.', 'q2': 'Is it on iPhone and Android?', 'a2': 'Yes, on both, with the same features. With an account, your collection syncs across devices.', 'q3': 'Which cards does it recognise?', 'a3': 'Pokémon cards in English and the European languages, plus Japanese, Korean and Chinese, exclusive Chinese sets included. It reads the set code and number and, when they can\'t be seen, matches the artwork. Everything runs on your phone: photos are never uploaded to a server.', 'q4': 'Where do the prices come from and how often do they update?', 'a4': 'Cardmarket (euros) and TCGplayer (dollars), refreshed continuously; Asian cards have their own source. Graded prices come from real sales per company and grade. They\'re a guide: the market rules.', 'q5': 'Does it tell printings and graded cards apart?', 'a5': 'Yes. Normal, reverse, holo and the other printings each have their own price. With Talaiot Pro you also see the graded value per company and grade (PSA, BGS, CGC, ACE, SGC and TAG) and save each card as raw or graded.', 'q6': 'Do I need an account?', 'a6': 'No. You can continue as a guest and use it. An account saves your collection to the cloud, syncs it across devices and unlocks the social side.', 'q7': 'Can I export my collection?', 'a7': 'Yes, to a CSV with name, set, number, language, printing, condition, quantity and value. The collection is yours.', 'q8': 'How do I cancel Talaiot Pro?', 'a8': 'From the subscription settings of your App Store or Google Play, any time. Cancel during the 7-day trial and nothing is charged.', 'q9': 'Is Talaiot affiliated with Pokémon?', 'a9': 'No. Talaiot™ is an independent app. It is not affiliated with, associated with or sponsored by The Pokémon Company, Nintendo, Creatures or Game Freak.'
+      "title": "Talaiot · TCG Card Scanner",
+      "nav.how": "How it works",
+      "nav.prices": "Prices",
+      "nav.collection": "Collection",
+      "nav.community": "Community",
+      "nav.premium": "Talaiot Pro",
+      "nav.why": "Why Talaiot",
+      "nav.faq": "FAQ",
+      "nav.cta": "Download",
+      "hero.tag": "iPhone · Android",
+      "hero.eyebrow": "TCG card scanner",
+      "hero.h1a": "Scan your cards.",
+      "hero.h1b": "See what they're worth.",
+      "hero.claim": "Card by card, what you build remains.",
+      "hero.sub": "A scanner with instant market prices, an international and Asian catalogue, an organised collection with its value kept up to date, graded prices, alerts, and a community of collectors with chat. Free and ad-free.",
+      "b.ios1": "Download on the",
+      "b.and1": "GET IT ON",
+      "hero.soon": "Coming soon to the stores · iPhone and Android",
+      "hero.free": "Free · no ads · no account required",
+      "h.eyebrow": "How it works",
+      "h.h2": "Point, see the price, save it",
+      "h.lead": "All recognition happens on your phone: the photo never leaves it. No card limit and no account required.",
+      "h.popl": "Market price",
+      "h.popt": "Pikachu ex · Raw · Cardmarket",
+      "st1h": "Point the camera",
+      "st1p": "It reads the printed number and set code and, when they can't be seen, matches the artwork against the catalogue. International, Japanese, Korean or Chinese.",
+      "st2h": "See what it's worth",
+      "st2p": "Market price in euros (Cardmarket) or dollars (TCGplayer), per printing: normal, reverse, holo. With Pro, graded too.",
+      "st3h": "Save it to your collection",
+      "st3p": "Language, quantity, condition and folder. Your collection's total value updates by itself, day by day.",
+      "m1h": "One card at a time",
+      "m1p": "A card in front of the camera and done. No limit.",
+      "m2h": "Multi-scan",
+      "m2p": "Several cards at once, live: point at the table and it picks them all up in one pass.",
+      "m3h": "Binder page",
+      "m3p": "One photo of a binder page, 2×2, 3×3 or 4×4, and every card goes in at once.",
+      "chip.free": "Free",
+      "pr.eyebrow": "Prices",
+      "pr.h2": "What it's worth today, and where it's heading",
+      "pr.lead": "Market prices from Cardmarket and TCGplayer, refreshed continuously. They're a guide: the market rules.",
+      "pr1h": "Graded, by company and grade",
+      "pr1p": "PSA, BGS, CGC, ACE, SGC and TAG: the value of every grade, from real sales.",
+      "pr2h": "How your collection evolves",
+      "pr2p": "Charts of your collection's value and the market, day by day, to see where each rise comes from.",
+      "pr3h": "Trend radar",
+      "pr3p": "The cards rising and falling the most over the last 30 days, per catalogue.",
+      "co.eyebrow": "Your collection",
+      "co.h2": "Organised, valued and complete, set by set",
+      "co.lead": "Every card with its language, printing and condition. Every set with its bar: how far you've got and what's missing.",
+      "co1h": "Folders",
+      "co1p": "Favourites, Japanese, graded, for trade… public or private, your call.",
+      "co2h": "Progress per set",
+      "co2p": "A percentage per set and the list of cards you're missing.",
+      "co3h": "Total value, up to date",
+      "co3p": "Raw and graded, in euros or dollars, with the trend of the last few weeks.",
+      "a.tag": "Own catalogue",
+      "a.eyebrow": "The catalogue",
+      "a.h2": "Built for the cards other apps can't see",
+      "a.p1": "Most scanners are built for the American market: English catalogue, dollar prices. Talaiot has its own catalogue in two blocks: International, with English and the European languages and euro prices; and Asia, with Japan and Korea on one side and China on the other, exclusive Chinese sets included.",
+      "a.bigl": "cards · International · Japan · Korea · China",
+      "com.eyebrow": "Community",
+      "com.h2": "Collecting is better together",
+      "com.lead": "Profile, public collections, followers and chat with cards inside. All free and all optional.",
+      "c1h": "Collector profile",
+      "c1p": "Your profile with your cards, your bio and your public collections.",
+      "c2h": "Public collections",
+      "c2p": "Choose which folders are visible and browse other collectors'.",
+      "c3h": "Follow anyone",
+      "c3p": "Followers and following, like any network, but cards only.",
+      "c4h": "Chat with cards inside",
+      "c4p": "Send a card in a message and open its details right from the chat.",
+      "p.eyebrow": "Talaiot Pro",
+      "p.h2": "What matters is free. The serious-collector part, $4.99 a month.",
+      "p.free": "Free",
+      "p.price0": "$0",
+      "p.price": "$4.99",
+      "p.tag": "7 days free",
+      "p.per": "/ month",
+      "p.annual": "or $39.99 a year",
+      "p.annualSub": "· $3.33 a month · save 33%",
+      "pf1": "Card scanner, one at a time, no limits",
+      "pf2": "All market prices, in euros and dollars",
+      "pf3": "Full catalogue and unlimited collection",
+      "pf4": "Profile, public collections and chat",
+      "pf5": "No ads",
+      "p.freenote": "And it works without an account.",
+      "pp1": "Graded value by company and grade: PSA, BGS, CGC, ACE…",
+      "pp2": "Multi-scan: several cards at once, live",
+      "pp3": "Binder page from one photo: 2×2, 3×3 or 4×4",
+      "pp4": "Charts of your collection and the market over time",
+      "pp5": "Alerts when a wishlist card drops in price",
+      "p.pronote": "Free 7-day trial on the monthly plan. No commitment, cancel from the store. US prices: your store shows the prices for your country.",
+      "q.eyebrow": "FAQ",
+      "q.h2": "What people ask",
+      "c.h2": "Start with whatever is on the table.",
+      "c.p": "A single card or the whole binder. Free, no ads and no account required.",
+      "ft.privacy": "Privacy",
+      "ft.terms": "Terms of use",
+      "ft.delete": "Delete your account",
+      "ft.contact": "Contact",
+      "ft.disc": "Talaiot™ is an independent tool for collectors. It is not affiliated with, associated with or sponsored by The Pokémon Company, Nintendo, Creatures, Game Freak or Wizards of the Coast. All trademarks and product names belong to their respective owners and are used for identification only. Prices come from public market sources and are indicative. © 2026 Talaiot.",
+      "w.claim1": "Card by card,",
+      "w.claim2": "what you build remains.",
+      "ft.made": "Card by card, what you build remains.",
+      "w.eyebrow": "Talaiot",
+      "w.lead": "A talaiot is a stone tower raised stone by stone, still standing three thousand years later.",
+      "ft.story": "TCG card scanner · Prices · Collections · Community",
+      "q1": "Is it free?",
+      "a1": "Yes. Scanning one card at a time, prices, organising your collection and the whole social side are free and ad-free. Talaiot Pro adds graded prices, multi-scan and binder-page scanning, charts and alerts, with a 7-day trial.",
+      "q2": "Is it on iPhone and Android?",
+      "a2": "Yes, on both, with the same features. With an account, your collection syncs across devices.",
+      "q3": "Which cards does it recognise?",
+      "a3": "Pokémon cards in English and the European languages, plus Japanese, Korean and Chinese, exclusive Chinese sets included. It reads the set code and number and, when they can't be seen, matches the artwork. Everything runs on your phone: photos are never uploaded to a server.",
+      "q4": "Where do the prices come from and how often do they update?",
+      "a4": "Cardmarket (euros) and TCGplayer (dollars), refreshed continuously; Asian cards have their own source. Graded prices come from real sales per company and grade. They're a guide: the market rules.",
+      "q5": "Does it tell printings and graded cards apart?",
+      "a5": "Yes. Normal, reverse, holo and the other printings each have their own price. With Talaiot Pro you also see the graded value per company and grade (PSA, BGS, CGC, ACE, SGC and TAG) and save each card as raw or graded.",
+      "q6": "Do I need an account?",
+      "a6": "No. You can continue as a guest and use it. An account saves your collection to the cloud, syncs it across devices and unlocks the social side.",
+      "q7": "Can I export my collection?",
+      "a7": "Yes, to a CSV with name, set, number, language, printing, condition, quantity and value. The collection is yours.",
+      "q8": "How do I cancel Talaiot Pro?",
+      "a8": "From the subscription settings of your App Store or Google Play, any time. Cancel during the 7-day trial and nothing is charged.",
+      "q9": "Is Talaiot affiliated with Pokémon?",
+      "a9": "No. Talaiot™ is an independent app. It is not affiliated with, associated with or sponsored by The Pokémon Company, Nintendo, Creatures or Game Freak.",
+      "meta.desc": "Scan your cards with your camera and see what they're worth, Japanese, Korean and Chinese ones too. Market prices, an organised collection and a community. Free and ad-free.",
+      "og.desc": "Scan your cards and see what they're worth. Card by card, what you build remains.",
+      "alt.coleccion": "My collection: total value, cards, scanned, graded and wanted",
+      "alt.ficha": "Card page with its market price",
+      "alt.colecciones": "Collections catalogue with the progress of each set",
+      "alt.chat": "Chat with a card sent inside the message",
+      "alt.social": "Social hub with the collectors you follow",
+      "alt.favoritas": "Favourites folder with the value of each card",
+      "alt.set": "The Pitch Black set with all its cards",
+      "alt.perfil": "Another collector's profile with her public collection",
+      "aria.sections": "Sections",
+      "aria.lang": "Language",
+      "aria.carousel": "App screens",
+      "aria.prev": "Previous",
+      "aria.next": "Next",
+      "aria.slide": "Screen {n}"
+    },
+    fr: {
+      "title": "Talaiot · Scan de cartes TCG",
+      "nav.how": "Comment ça marche",
+      "nav.prices": "Prix",
+      "nav.collection": "Collection",
+      "nav.community": "Communauté",
+      "nav.premium": "Talaiot Pro",
+      "nav.why": "Pourquoi Talaiot",
+      "nav.faq": "FAQ",
+      "nav.cta": "Télécharger",
+      "hero.tag": "iPhone · Android",
+      "hero.eyebrow": "Scan de cartes TCG",
+      "hero.h1a": "Scannez vos cartes.",
+      "hero.h1b": "Découvrez ce qu’elles valent.",
+      "hero.claim": "Carte après carte, ce que vous bâtissez demeure.",
+      "hero.sub": "Un scanner qui affiche la cote en un instant, un catalogue de cartes internationales et asiatiques, une collection organisée dont la valeur reste à jour, les prix des cartes gradées, des alertes et une communauté de collectionneurs avec chat. Gratuit et sans publicité.",
+      "b.ios1": "Télécharger dans l’",
+      "b.and1": "DISPONIBLE SUR",
+      "hero.soon": "Bientôt disponible en téléchargement · iPhone et Android",
+      "hero.free": "Gratuit · sans publicité · sans compte obligatoire",
+      "h.eyebrow": "Comment ça marche",
+      "h.h2": "Visez la carte, découvrez sa cote, enregistrez-la",
+      "h.lead": "Toute la reconnaissance se fait sur votre téléphone : la photo n’en sort jamais. Sans limite de cartes et sans compte obligatoire.",
+      "h.popl": "Prix du marché",
+      "h.popt": "Pikachu ex · Non gradée · Cardmarket",
+      "st1h": "Visez avec l’appareil photo",
+      "st1p": "L’app lit le numéro et le code d’extension imprimés sur la carte et, s’ils ne sont pas visibles, compare l’illustration au catalogue. Cartes internationales, japonaises, coréennes ou chinoises.",
+      "st2h": "Découvrez ce qu’elle vaut",
+      "st2p": "Prix du marché en euros (Cardmarket) ou en dollars (TCGplayer), pour chaque variante : normale, reverse, holo. Avec Pro, la cote des cartes gradées en plus.",
+      "st3h": "Enregistrez-la dans votre collection",
+      "st3p": "Langue, quantité, état et dossier. La valeur totale de votre collection se met à jour toute seule, jour après jour.",
+      "m1h": "Carte par carte",
+      "m1p": "Une carte devant l’appareil photo et le tour est joué. Sans limite.",
+      "m2h": "Scan multiple",
+      "m2p": "Plusieurs cartes à la fois, en direct : visez la table et l’app les reconnaît toutes d’un seul coup.",
+      "m3h": "Page d’album",
+      "m3p": "Une photo de la page d’album, en 2×2, 3×3 ou 4×4, et toutes les cartes sont ajoutées en même temps.",
+      "chip.free": "Gratuit",
+      "pr.eyebrow": "Prix",
+      "pr.h2": "La cote du jour et sa tendance",
+      "pr.lead": "Les prix du marché de Cardmarket et de TCGplayer, actualisés en continu. Ils sont donnés à titre indicatif : c’est le marché qui décide.",
+      "pr1h": "Cartes gradées, par société et par note",
+      "pr1p": "PSA, BGS, CGC, ACE, SGC et TAG : la valeur de chaque note, d’après des ventes réelles.",
+      "pr2h": "L’évolution de votre collection",
+      "pr2p": "Des graphiques de la valeur de votre collection et du marché, jour après jour, pour voir d’où vient chaque hausse.",
+      "pr3h": "Radar des tendances",
+      "pr3p": "Les cartes qui ont le plus monté et le plus baissé sur les 30 derniers jours, catalogue par catalogue.",
+      "co.eyebrow": "Votre collection",
+      "co.h2": "Organisée, évaluée et complétée extension par extension",
+      "co.lead": "Chaque carte avec sa langue, sa variante et son état. Chaque extension avec sa barre de progression : où vous en êtes et ce qui vous manque.",
+      "co1h": "Dossiers",
+      "co1p": "Favorites, japonaises, gradées, à échanger… en public ou en privé, comme vous voulez.",
+      "co2h": "Progression par extension",
+      "co2p": "Un pourcentage par extension et la liste des cartes qui vous manquent.",
+      "co3h": "Valeur totale à jour",
+      "co3p": "Cartes non gradées et gradées, en euros ou en dollars, avec la tendance des dernières semaines.",
+      "a.tag": "Catalogue maison",
+      "a.eyebrow": "Le catalogue",
+      "a.h2": "Conçue pour les cartes que les autres apps ne voient pas",
+      "a.p1": "La plupart des scanners sont pensés pour le marché américain : catalogue en anglais et prix en dollars. Talaiot possède son propre catalogue, organisé en deux blocs : International, avec l’anglais, les langues européennes et les prix en euros ; et Asie, avec d’un côté le Japon et la Corée, de l’autre la Chine et ses extensions exclusives.",
+      "a.bigl": "cartes · International · Japon · Corée · Chine",
+      "com.eyebrow": "Communauté",
+      "com.h2": "Collectionner, c’est mieux à plusieurs",
+      "com.lead": "Profil, collections publiques, abonnés et chat où l’on s’envoie des cartes. Tout est gratuit, et tout est facultatif.",
+      "c1h": "Profil de collectionneur",
+      "c1p": "Votre profil, avec vos cartes, votre bio et vos collections publiques.",
+      "c2h": "Collections publiques",
+      "c2p": "Choisissez les dossiers visibles et explorez ceux des autres collectionneurs.",
+      "c3h": "Suivez qui vous voulez",
+      "c3p": "Abonnés et suivis, comme sur n’importe quel réseau, mais rien que pour les cartes.",
+      "c4h": "Des cartes dans le chat",
+      "c4p": "Envoyez une carte dans un message et ouvrez sa fiche directement depuis la conversation.",
+      "p.eyebrow": "Talaiot Pro",
+      "p.h2": "L’essentiel est gratuit. Les outils du collectionneur averti : 3,99 € par mois.",
+      "p.free": "Gratuit",
+      "p.price0": "0 €",
+      "p.price": "3,99 €",
+      "p.tag": "7 jours offerts",
+      "p.per": "/ mois",
+      "p.annual": "ou 34,99 € par an",
+      "p.annualSub": "· 2,92 € par mois · économisez 27 %",
+      "pf1": "Scan de cartes, carte par carte et sans limite",
+      "pf2": "Tous les prix du marché, en euros et en dollars",
+      "pf3": "Catalogue complet et collection illimitée",
+      "pf4": "Profil, collections publiques et chat",
+      "pf5": "Sans publicité",
+      "p.freenote": "Et utilisable sans compte.",
+      "pp1": "Valeur des cartes gradées par société et par note : PSA, BGS, CGC, ACE…",
+      "pp2": "Scan multiple : plusieurs cartes à la fois, en direct",
+      "pp3": "Scan de page d’album en une seule photo : 2×2, 3×3 ou 4×4",
+      "pp4": "Graphiques d’évolution de votre collection et du marché",
+      "pp5": "Alertes quand une carte de votre liste de souhaits baisse de prix",
+      "p.pronote": "Essai gratuit de 7 jours avec la formule mensuelle. Sans engagement, résiliable depuis votre boutique d’applications. Prix pour la zone euro : votre boutique affiche les prix de votre pays.",
+      "q.eyebrow": "FAQ",
+      "q.h2": "Questions fréquentes",
+      "c.h2": "Commencez avec ce que vous avez sous la main.",
+      "c.p": "Une seule carte ou le classeur entier. Gratuit, sans publicité et sans compte obligatoire.",
+      "ft.privacy": "Confidentialité",
+      "ft.terms": "Conditions d’utilisation",
+      "ft.delete": "Supprimer votre compte",
+      "ft.contact": "Contact",
+      "ft.disc": "Talaiot™ est une application indépendante pour collectionneurs. Elle n’est ni affiliée ni associée à The Pokémon Company, Nintendo, Creatures, Game Freak ou Wizards of the Coast, et n’est pas parrainée par ces sociétés. Toutes les marques et tous les noms de produits appartiennent à leurs propriétaires respectifs et sont utilisés à des fins d’identification uniquement. Les prix proviennent de sources de marché publiques et sont donnés à titre indicatif. © 2026 Talaiot.",
+      "w.claim1": "Carte après carte,",
+      "w.claim2": "ce que vous bâtissez demeure.",
+      "ft.made": "Carte après carte, ce que vous bâtissez demeure.",
+      "w.eyebrow": "Talaiot",
+      "w.lead": "Un talaiot est une tour de pierre, bâtie pierre après pierre, qui se dresse encore trois mille ans plus tard.",
+      "ft.story": "Scan de cartes TCG · Prix · Collections · Communauté",
+      "q1": "L’app est-elle gratuite ?",
+      "a1": "Oui. Le scan carte par carte, les prix, l’organisation de votre collection et tout l’aspect social sont gratuits et sans publicité. Talaiot Pro ajoute les prix des cartes gradées, le scan multiple et le scan de page d’album, les graphiques et les alertes, avec 7 jours d’essai gratuit.",
+      "q2": "L’app est-elle disponible sur iPhone et Android ?",
+      "a2": "Oui, sur les deux, avec les mêmes fonctionnalités. Avec un compte, votre collection est synchronisée entre vos appareils.",
+      "q3": "Quelles cartes l’app reconnaît-elle ?",
+      "a3": "Les cartes Pokémon en anglais et dans les langues européennes, mais aussi les cartes japonaises, coréennes et chinoises, y compris les extensions exclusives à la Chine. L’app lit le code d’extension et le numéro et, s’ils ne sont pas visibles, compare l’illustration. Tout se passe sur votre téléphone : les photos ne sont envoyées à aucun serveur.",
+      "q4": "D’où viennent les prix et à quelle fréquence sont-ils mis à jour ?",
+      "a4": "De Cardmarket (en euros) et de TCGplayer (en dollars), avec une actualisation continue ; les cartes asiatiques ont leur propre source. Les prix des cartes gradées proviennent de ventes réelles, par société et par note. Ils sont donnés à titre indicatif : c’est le marché qui décide.",
+      "q5": "L’app fait-elle la différence entre les variantes et les cartes gradées ?",
+      "a5": "Oui. Normale, reverse, holo… chaque variante a son propre prix. Avec Talaiot Pro, vous voyez aussi la valeur gradée par société et par note (PSA, BGS, CGC, ACE, SGC et TAG), et vous enregistrez chaque carte comme non gradée ou gradée.",
+      "q6": "Faut-il un compte ?",
+      "a6": "Non. Vous pouvez continuer en tant qu’invité et utiliser l’app. Un compte sauvegarde votre collection dans le cloud, la synchronise entre vos appareils et débloque les fonctions sociales.",
+      "q7": "Puis-je exporter ma collection ?",
+      "a7": "Oui, au format CSV, avec le nom, l’extension, le numéro, la langue, la variante, l’état, la quantité et la valeur. Votre collection vous appartient.",
+      "q8": "Comment résilier Talaiot Pro ?",
+      "a8": "Depuis les réglages d’abonnement de l’App Store ou de Google Play, quand vous le souhaitez. Si vous résiliez pendant les 7 jours d’essai, rien ne vous est facturé.",
+      "q9": "L’app Talaiot est-elle liée à Pokémon ?",
+      "a9": "Non. Talaiot™ est une app indépendante. Elle n’est ni affiliée ni associée à The Pokémon Company, Nintendo, Creatures ou Game Freak, et n’est pas parrainée par ces sociétés.",
+      "meta.desc": "Scannez vos cartes avec l’appareil photo et découvrez ce qu’elles valent, y compris les cartes japonaises, coréennes et chinoises. Prix du marché, collection organisée et communauté. Gratuit et sans publicité.",
+      "og.desc": "Scannez vos cartes et découvrez ce qu’elles valent. Carte après carte, ce que vous bâtissez demeure.",
+      "alt.coleccion": "Ma collection : valeur totale, cartes, scannées, gradées et souhaitées",
+      "alt.ficha": "Fiche d’une carte avec son prix du marché",
+      "alt.colecciones": "Écran Collections avec la progression de chaque extension",
+      "alt.chat": "Chat avec une carte envoyée dans un message",
+      "alt.social": "Espace social avec les collectionneurs que vous suivez",
+      "alt.favoritas": "Dossier des favorites avec la valeur de chaque carte",
+      "alt.set": "L’extension Pitch Black avec toutes ses cartes",
+      "alt.perfil": "Profil d’une autre collectionneuse avec sa collection publique",
+      "aria.sections": "Sections",
+      "aria.lang": "Langue",
+      "aria.carousel": "Écrans de l’app",
+      "aria.prev": "Précédent",
+      "aria.next": "Suivant",
+      "aria.slide": "Écran {n}"
+    },
+    de: {
+      "title": "Talaiot · TCG-Kartenscanner",
+      "nav.how": "So funktioniert’s",
+      "nav.prices": "Preise",
+      "nav.collection": "Sammlung",
+      "nav.community": "Community",
+      "nav.premium": "Talaiot Pro",
+      "nav.why": "Warum Talaiot",
+      "nav.faq": "FAQ",
+      "nav.cta": "Download",
+      "hero.tag": "iPhone · Android",
+      "hero.eyebrow": "TCG-Kartenscanner",
+      "hero.h1a": "Scanne deine Karten.",
+      "hero.h1b": "Sieh, was sie wert sind.",
+      "hero.claim": "Karte für Karte – was du aufbaust, bleibt.",
+      "hero.sub": "Der Scanner zeigt dir sofort den Marktpreis. Dazu: ein Katalog mit internationalen und asiatischen Karten, eine geordnete Sammlung mit tagesaktuellem Wert, Grading-Preise, Preisalarme und eine Sammler-Community mit Chat. Kostenlos und ohne Werbung.",
+      "b.ios1": "Laden im",
+      "b.and1": "JETZT BEI",
+      "hero.soon": "Schon bald in den Stores · iPhone und Android",
+      "hero.free": "Kostenlos · ohne Werbung · kein Konto nötig",
+      "h.eyebrow": "So funktioniert’s",
+      "h.h2": "Draufhalten, Preis sehen, speichern",
+      "h.lead": "Die gesamte Erkennung läuft auf deinem Handy: Das Foto verlässt es nie. Kein Kartenlimit, kein Konto nötig.",
+      "h.popl": "Marktpreis",
+      "h.popt": "Pikachu ex · Raw · Cardmarket",
+      "st1h": "Kamera draufhalten",
+      "st1p": "Die App liest die aufgedruckte Nummer und den Set-Code. Sind sie nicht zu erkennen, vergleicht sie die Illustration mit dem Katalog. Für internationale, japanische, koreanische und chinesische Karten.",
+      "st2h": "Sieh, was sie wert ist",
+      "st2p": "Marktpreis in Euro (Cardmarket) oder US-Dollar (TCGplayer), je Variante: Normal, Reverse, Holo. Mit Pro auch für gegradete Karten.",
+      "st3h": "Speichere sie in deiner Sammlung",
+      "st3p": "Sprache, Anzahl, Zustand und Ordner. Der Gesamtwert deiner Sammlung aktualisiert sich von selbst, Tag für Tag.",
+      "m1h": "Karte für Karte",
+      "m1p": "Karte vor die Kamera halten – fertig. Ohne Limit.",
+      "m2h": "Mehrfach-Scan",
+      "m2p": "Mehrere Karten gleichzeitig, live: Richte die Kamera auf den Tisch, und alle Karten werden in einem Durchgang erkannt.",
+      "m3h": "Albumseiten-Scan",
+      "m3p": "Ein Foto der Albumseite, ob 2×2, 3×3 oder 4×4, und alle Karten landen auf einmal in deiner Sammlung.",
+      "chip.free": "Gratis",
+      "pr.eyebrow": "Preise",
+      "pr.h2": "Was deine Karten heute wert sind – und wohin die Reise geht",
+      "pr.lead": "Marktpreise von Cardmarket und TCGplayer, laufend aktualisiert. Sie dienen zur Orientierung: Das letzte Wort hat der Markt.",
+      "pr1h": "Gegradete Karten nach Grading-Anbieter und Note",
+      "pr1p": "PSA, BGS, CGC, ACE, SGC und TAG: der Wert jeder Note, basierend auf echten Verkäufen.",
+      "pr2h": "Die Entwicklung deiner Sammlung",
+      "pr2p": "Diagramme zum Wert deiner Sammlung und zum Markt, Tag für Tag – so siehst du, woher jeder Anstieg kommt.",
+      "pr3h": "Trend-Radar",
+      "pr3p": "Die Karten mit den größten Preisanstiegen und -rückgängen der letzten 30 Tage, je Katalog.",
+      "co.eyebrow": "Deine Sammlung",
+      "co.h2": "Ordnen, bewerten und Set für Set vervollständigen",
+      "co.lead": "Jede Karte mit Sprache, Variante und Zustand. Jedes Set mit Fortschrittsbalken: wie viele Karten du schon hast und wie viele dir noch fehlen.",
+      "co1h": "Ordner",
+      "co1p": "Favoriten, japanische Karten, gegradete, Tauschkarten … öffentlich oder privat, ganz wie du willst.",
+      "co2h": "Fortschritt pro Set",
+      "co2p": "Ein Prozentwert pro Set und die Liste der Karten, die dir noch fehlen.",
+      "co3h": "Gesamtwert, tagesaktuell",
+      "co3p": "Raw und gegradet, in Euro oder US-Dollar, mit dem Trend der letzten Wochen.",
+      "a.tag": "Eigener Katalog",
+      "a.eyebrow": "Der Katalog",
+      "a.h2": "Gemacht für die Karten, die andere Apps nicht erkennen",
+      "a.p1": "Die meisten Scanner sind auf den US-Markt ausgelegt: Katalog auf Englisch, Preise in Dollar. Talaiot hat einen eigenen Katalog mit zwei Bereichen: „International“ mit Englisch und den europäischen Sprachen sowie Preisen in Euro und „Asien“ mit Japan und Korea auf der einen und China auf der anderen Seite – inklusive der exklusiven chinesischen Sets.",
+      "a.bigl": "Karten · International · Japan · Korea · China",
+      "com.eyebrow": "Community",
+      "com.h2": "Gemeinsam sammelt es sich besser",
+      "com.lead": "Profil, öffentliche Sammlungen, Follower und ein Chat, in dem du Karten verschicken kannst. Alles kostenlos und alles optional.",
+      "c1h": "Sammlerprofil",
+      "c1p": "Dein Profil mit deinen Karten, deiner Bio und deinen öffentlichen Sammlungen.",
+      "c2h": "Öffentliche Sammlungen",
+      "c2p": "Entscheide, welche Ordner sichtbar sind, und stöbere in den Sammlungen anderer Sammler.",
+      "c3h": "Folge, wem du willst",
+      "c3p": "Follower und gefolgte Profile wie in jedem sozialen Netzwerk – nur eben rund um Karten.",
+      "c4h": "Karten direkt im Chat",
+      "c4p": "Schick eine Karte per Nachricht und öffne ihre Detailseite direkt im Chat.",
+      "p.eyebrow": "Talaiot Pro",
+      "p.h2": "Das Wichtigste gibt’s gratis. Das Extra für ambitionierte Sammler: 3,99 € im Monat.",
+      "p.free": "Gratis",
+      "p.price0": "0 €",
+      "p.price": "3,99 €",
+      "p.tag": "7 Tage gratis",
+      "p.per": "/ Monat",
+      "p.annual": "oder 34,99 € pro Jahr",
+      "p.annualSub": "· 2,92 € pro Monat · 27 % sparen",
+      "pf1": "Kartenscanner, Karte für Karte und ohne Limit",
+      "pf2": "Alle Marktpreise, in Euro und US-Dollar",
+      "pf3": "Kompletter Katalog und unbegrenzte Sammlung",
+      "pf4": "Profil, öffentliche Sammlungen und Chat",
+      "pf5": "Ohne Werbung",
+      "p.freenote": "Und du kannst die App auch ohne Konto nutzen.",
+      "pp1": "Wert gegradeter Karten nach Grading-Anbieter und Note: PSA, BGS, CGC, ACE …",
+      "pp2": "Mehrfach-Scan: mehrere Karten gleichzeitig, live",
+      "pp3": "Albumseiten-Scan mit einem Foto: 2×2, 3×3 oder 4×4",
+      "pp4": "Verlaufsdiagramme für deine Sammlung und den Markt",
+      "pp5": "Preisalarm, wenn eine Karte auf deiner Wunschliste günstiger wird",
+      "p.pronote": "Beim Monatsabo 7 Tage kostenlos testen. Keine Mindestlaufzeit, Kündigung über deinen Store. Preise für die Eurozone: Dein Store zeigt dir die Preise für dein Land.",
+      "q.eyebrow": "FAQ",
+      "q.h2": "Häufige Fragen",
+      "c.h2": "Fang mit den Karten an, die gerade vor dir liegen.",
+      "c.p": "Eine einzelne Karte oder das ganze Album. Kostenlos, ohne Werbung und ohne Kontopflicht.",
+      "ft.privacy": "Datenschutz",
+      "ft.terms": "Nutzungsbedingungen",
+      "ft.delete": "Konto löschen",
+      "ft.contact": "Kontakt",
+      "ft.disc": "Talaiot™ ist ein unabhängiges Tool für Sammler. Es ist mit keinem der folgenden Unternehmen verbunden oder assoziiert und wird von keinem von ihnen gesponsert: The Pokémon Company, Nintendo, Creatures, Game Freak und Wizards of the Coast. Alle Marken und Produktnamen gehören ihren jeweiligen Inhabern und werden ausschließlich zu Identifikationszwecken verwendet. Die Preise stammen aus öffentlichen Marktquellen und dienen nur zur Orientierung. © 2026 Talaiot.",
+      "w.claim1": "Karte für Karte –",
+      "w.claim2": "was du aufbaust, bleibt.",
+      "ft.made": "Karte für Karte – was du aufbaust, bleibt.",
+      "w.eyebrow": "Talaiot",
+      "w.lead": "Ein Talaiot ist ein Steinturm, der Stein für Stein errichtet wurde und nach dreitausend Jahren noch immer steht.",
+      "ft.story": "TCG-Kartenscanner · Preise · Sammlungen · Community",
+      "q1": "Ist Talaiot kostenlos?",
+      "a1": "Ja. Das Scannen einzelner Karten, die Marktpreise, die Organisation deiner Sammlung und alle Community-Funktionen sind kostenlos und werbefrei. Talaiot Pro bietet zusätzlich Grading-Preise, Mehrfach- und Albumseiten-Scan, Verlaufsdiagramme sowie Preisalarme und lässt sich 7 Tage kostenlos testen.",
+      "q2": "Gibt es Talaiot für iPhone und Android?",
+      "a2": "Ja, für beide – mit denselben Funktionen. Mit einem Konto wird deine Sammlung zwischen deinen Geräten synchronisiert.",
+      "q3": "Welche Karten erkennt die App?",
+      "a3": "Pokémon-Karten auf Englisch und in den europäischen Sprachen, außerdem japanische, koreanische und chinesische – einschließlich der exklusiven Sets aus China. Die App liest Set-Code und Nummer; sind sie nicht zu erkennen, vergleicht sie die Illustration. Alles passiert auf deinem Handy: Die Fotos werden auf keinen Server hochgeladen.",
+      "q4": "Woher stammen die Preise und wie oft werden sie aktualisiert?",
+      "a4": "Von Cardmarket (Euro) und TCGplayer (US-Dollar), laufend aktualisiert; für asiatische Karten gibt es eine eigene Quelle. Die Grading-Preise basieren auf echten Verkäufen, aufgeschlüsselt nach Grading-Anbieter und Note. Alle Preise dienen zur Orientierung: Das letzte Wort hat der Markt.",
+      "q5": "Unterscheidet die App zwischen Varianten und gegradeten Karten?",
+      "a5": "Ja. Normal, Reverse, Holo und alle weiteren Varianten haben ihren eigenen Preis. Mit Talaiot Pro siehst du außerdem den Wert gegradeter Karten nach Grading-Anbieter und Note (PSA, BGS, CGC, ACE, SGC und TAG) und speicherst jede Karte als ungegradet oder gegradet.",
+      "q6": "Brauche ich ein Konto?",
+      "a6": "Nein. Du kannst als Gast fortfahren und die App direkt nutzen. Mit einem Konto wird deine Sammlung in der Cloud gespeichert und zwischen deinen Geräten synchronisiert, außerdem schaltest du die Community-Funktionen frei.",
+      "q7": "Kann ich meine Sammlung exportieren?",
+      "a7": "Ja, als CSV-Datei mit Name, Set, Nummer, Sprache, Variante, Zustand, Anzahl und Wert. Deine Sammlung gehört dir.",
+      "q8": "Wie kündige ich Talaiot Pro?",
+      "a8": "Jederzeit in den Abo-Einstellungen im App Store oder bei Google Play. Kündigst du während der 7-tägigen Testphase, wird dir nichts berechnet.",
+      "q9": "Gehört Talaiot zu Pokémon?",
+      "a9": "Nein. Talaiot™ ist eine unabhängige App. Sie ist mit keinem der folgenden Unternehmen verbunden oder assoziiert und wird von keinem von ihnen gesponsert: The Pokémon Company, Nintendo, Creatures und Game Freak.",
+      "meta.desc": "Scanne deine Karten mit der Kamera und sieh, was sie wert sind – auch japanische, koreanische und chinesische. Marktpreise, eine geordnete Sammlung und eine Community. Kostenlos und ohne Werbung.",
+      "og.desc": "Scanne deine Karten und sieh, was sie wert sind. Karte für Karte – was du aufbaust, bleibt.",
+      "alt.coleccion": "Meine Sammlung: Gesamtwert, Anzahl der Karten sowie gescannte, gegradete und gewünschte Karten",
+      "alt.ficha": "Detailseite einer Karte mit ihrem Marktpreis",
+      "alt.colecciones": "Set-Katalog mit dem Fortschritt jedes Sets",
+      "alt.chat": "Chat mit einer Karte, die in einer Nachricht verschickt wurde",
+      "alt.social": "Community-Bereich mit den Sammlern, denen du folgst",
+      "alt.favoritas": "Favoriten-Ordner mit dem Wert jeder Karte",
+      "alt.set": "Das Set „Pitch Black“ mit all seinen Karten",
+      "alt.perfil": "Profil einer anderen Sammlerin mit ihrer öffentlichen Sammlung",
+      "aria.sections": "Bereiche",
+      "aria.lang": "Sprache",
+      "aria.carousel": "App-Screenshots",
+      "aria.prev": "Zurück",
+      "aria.next": "Weiter",
+      "aria.slide": "Screenshot {n}"
+    },
+    it: {
+      "title": "Talaiot · Scanner di carte TCG",
+      "nav.how": "Come funziona",
+      "nav.prices": "Prezzi",
+      "nav.collection": "Collezione",
+      "nav.community": "Community",
+      "nav.premium": "Talaiot Pro",
+      "nav.why": "Perché Talaiot",
+      "nav.faq": "Domande",
+      "nav.cta": "Scarica",
+      "hero.tag": "iPhone · Android",
+      "hero.eyebrow": "Scanner di carte TCG",
+      "hero.h1a": "Scansiona le tue carte.",
+      "hero.h1b": "Scopri quanto valgono.",
+      "hero.claim": "Carta dopo carta, ciò che costruisci resta.",
+      "hero.sub": "Scanner con i prezzi di mercato all’istante, catalogo internazionale e asiatico, collezione organizzata con il valore sempre aggiornato, prezzi delle carte gradate, avvisi e una community di collezionisti con chat. Gratis e senza pubblicità.",
+      "b.ios1": "Scarica su",
+      "b.and1": "DISPONIBILE SU",
+      "hero.soon": "Presto negli store · iPhone e Android",
+      "hero.free": "Gratis · senza pubblicità · account facoltativo",
+      "h.eyebrow": "Come funziona",
+      "h.h2": "Inquadra, scopri il prezzo, salvala",
+      "h.lead": "Il riconoscimento avviene tutto sul tuo telefono: la foto non lascia mai il dispositivo. Nessun limite di carte e nessun account obbligatorio.",
+      "h.popl": "Prezzo di mercato",
+      "h.popt": "Pikachu ex · Raw · Cardmarket",
+      "st1h": "Inquadra con la fotocamera",
+      "st1p": "Legge il numero e il codice del set stampati sulla carta e, se non sono visibili, confronta l’illustrazione con il catalogo. Carte internazionali, giapponesi, coreane o cinesi.",
+      "st2h": "Scopri quanto vale",
+      "st2p": "Prezzo di mercato in euro (Cardmarket) o in dollari (TCGplayer), per variante: normale, reverse, holo. Con Pro, anche il prezzo delle gradate.",
+      "st3h": "Salvala nella tua collezione",
+      "st3p": "Lingua, quantità, condizione e cartella. Il valore totale della tua collezione si aggiorna da solo, giorno dopo giorno.",
+      "m1h": "Carta per carta",
+      "m1p": "Una carta davanti alla fotocamera e il gioco è fatto. Senza limiti.",
+      "m2h": "Scansione multipla",
+      "m2p": "Più carte insieme, in tempo reale: inquadra il tavolo e le riconosce tutte in un colpo solo.",
+      "m3h": "Pagina dell’album",
+      "m3p": "Una foto alla pagina dell’album, 2×2, 3×3 o 4×4, e tutte le carte vengono aggiunte in una volta sola.",
+      "chip.free": "Gratis",
+      "pr.eyebrow": "Prezzi",
+      "pr.h2": "Quanto vale oggi e dove sta andando",
+      "pr.lead": "Prezzi di mercato di Cardmarket e TCGplayer, aggiornati di continuo. Sono indicativi: a decidere è il mercato.",
+      "pr1h": "Carte gradate, per servizio e voto",
+      "pr1p": "PSA, BGS, CGC, ACE, SGC e TAG: il valore di ogni voto, basato su vendite reali.",
+      "pr2h": "L’andamento della tua collezione",
+      "pr2p": "Grafici del valore della tua collezione e del mercato, giorno per giorno, per capire da dove arriva ogni rialzo.",
+      "pr3h": "Radar delle tendenze",
+      "pr3p": "Le carte che salgono e scendono di più negli ultimi 30 giorni, per catalogo.",
+      "co.eyebrow": "La tua collezione",
+      "co.h2": "Ordinata, valutata e completa, set dopo set",
+      "co.lead": "Ogni carta con la sua lingua, la sua variante e la sua condizione. Ogni set con la sua barra: a che punto sei e quanto ti manca.",
+      "co1h": "Cartelle",
+      "co1p": "Preferite, giapponesi, gradate, da scambiare… pubbliche o private, come preferisci.",
+      "co2h": "Progressi per set",
+      "co2p": "Una percentuale per ogni set e l’elenco delle carte che ti mancano.",
+      "co3h": "Valore totale sempre aggiornato",
+      "co3p": "Raw e gradate, in euro o in dollari, con l’andamento delle ultime settimane.",
+      "a.tag": "Catalogo proprio",
+      "a.eyebrow": "Il catalogo",
+      "a.h2": "Per le carte che le altre app non vedono",
+      "a.p1": "La maggior parte degli scanner è pensata per il mercato americano: catalogo in inglese e prezzi in dollari. Talaiot ha un catalogo proprio diviso in due blocchi: Internazionale, con l’inglese, le lingue europee e i prezzi in euro; e Asia, con Giappone e Corea da una parte e Cina dall’altra, comprese le collezioni esclusive cinesi.",
+      "a.bigl": "carte · Internazionale · Giappone · Corea · Cina",
+      "com.eyebrow": "Community",
+      "com.h2": "Collezionare è più bello in compagnia",
+      "com.lead": "Profilo, collezioni pubbliche, follower e una chat in cui inviare carte. Tutto gratis e tutto facoltativo.",
+      "c1h": "Profilo da collezionista",
+      "c1p": "Il tuo profilo con le tue carte, la tua bio e le tue collezioni pubbliche.",
+      "c2h": "Collezioni pubbliche",
+      "c2p": "Scegli quali cartelle mostrare ed esplora quelle degli altri collezionisti.",
+      "c3h": "Segui chi vuoi",
+      "c3p": "Follower e seguiti, come su qualsiasi social, ma solo per le carte.",
+      "c4h": "Chat per condividere carte",
+      "c4p": "Invia una carta in un messaggio e apri la sua scheda direttamente dalla chat.",
+      "p.eyebrow": "Talaiot Pro",
+      "p.h2": "L’essenziale è gratis. Per i collezionisti più esigenti, 3,99 € al mese.",
+      "p.free": "Gratis",
+      "p.price0": "0 €",
+      "p.price": "3,99 €",
+      "p.tag": "7 giorni gratis",
+      "p.per": "/ mese",
+      "p.annual": "oppure 34,99 € all’anno",
+      "p.annualSub": "· 2,92 € al mese · risparmi il 27%",
+      "pf1": "Scanner di carte, una alla volta e senza limiti",
+      "pf2": "Tutti i prezzi di mercato, in euro e in dollari",
+      "pf3": "Catalogo completo e collezione illimitata",
+      "pf4": "Profilo, collezioni pubbliche e chat",
+      "pf5": "Senza pubblicità",
+      "p.freenote": "E puoi usare l’app anche senza account.",
+      "pp1": "Valore delle carte gradate per servizio e voto: PSA, BGS, CGC, ACE…",
+      "pp2": "Scansione multipla: più carte insieme, in tempo reale",
+      "pp3": "Pagina dell’album con una sola foto: 2×2, 3×3 o 4×4",
+      "pp4": "Grafici dell’andamento della tua collezione e del mercato",
+      "pp5": "Avvisi quando una carta della tua lista dei desideri scende di prezzo",
+      "p.pronote": "Prova gratuita di 7 giorni con il piano mensile. Nessun vincolo: disdici quando vuoi dallo store. Prezzi validi nell’area euro: il tuo store ti mostra quelli del tuo Paese.",
+      "q.eyebrow": "Domande",
+      "q.h2": "Le domande più frequenti",
+      "c.h2": "Inizia da quello che hai sul tavolo.",
+      "c.p": "Una carta sola o l’intero raccoglitore. Gratis, senza pubblicità e senza account obbligatorio.",
+      "ft.privacy": "Privacy",
+      "ft.terms": "Condizioni d’uso",
+      "ft.delete": "Elimina il tuo account",
+      "ft.contact": "Contatti",
+      "ft.disc": "Talaiot™ è uno strumento indipendente per collezionisti. Non è affiliato né associato a The Pokémon Company, Nintendo, Creatures, Game Freak o Wizards of the Coast, né sponsorizzato da esse. Tutti i marchi e i nomi dei prodotti appartengono ai rispettivi proprietari e sono usati solo a scopo identificativo. I prezzi provengono da fonti di mercato pubbliche e sono indicativi. © 2026 Talaiot.",
+      "w.claim1": "Carta dopo carta,",
+      "w.claim2": "ciò che costruisci resta.",
+      "ft.made": "Carta dopo carta, ciò che costruisci resta.",
+      "w.eyebrow": "Talaiot",
+      "w.lead": "Un talaiot è una torre di pietra innalzata pietra dopo pietra, ancora in piedi dopo tremila anni.",
+      "ft.story": "Scanner di carte TCG · Prezzi · Collezioni · Community",
+      "q1": "È gratis?",
+      "a1": "Sì. Scansionare carta per carta, consultare i prezzi, organizzare la collezione e tutta la parte social sono gratis e senza pubblicità. Talaiot Pro aggiunge i prezzi delle carte gradate, la scansione multipla e quella della pagina dell’album, i grafici e gli avvisi, con 7 giorni di prova gratuita.",
+      "q2": "È disponibile per iPhone e Android?",
+      "a2": "Sì, per entrambi e con le stesse funzioni. Con un account, la tua collezione si sincronizza tra i dispositivi.",
+      "q3": "Quali carte riconosce?",
+      "a3": "Carte Pokémon in inglese e nelle lingue europee, ma anche giapponesi, coreane e cinesi, comprese le collezioni esclusive della Cina. Legge il codice del set e il numero e, se non sono visibili, confronta l’illustrazione. Tutto avviene sul tuo telefono: le foto non vengono caricate su nessun server.",
+      "q4": "Da dove arrivano i prezzi e ogni quanto si aggiornano?",
+      "a4": "Da Cardmarket (euro) e TCGplayer (dollari), aggiornati di continuo; le carte asiatiche hanno una fonte propria. I prezzi delle carte gradate si basano su vendite reali, per servizio e voto. Sono indicativi: a decidere è il mercato.",
+      "q5": "Distingue le varianti e le carte gradate?",
+      "a5": "Sì. Normale, reverse, holo e tutte le altre varianti hanno un prezzo proprio. Con Talaiot Pro vedi anche il valore della carta gradata per servizio e voto (PSA, BGS, CGC, ACE, SGC e TAG) e puoi salvare ogni carta come raw o gradata.",
+      "q6": "Serve un account?",
+      "a6": "No. Puoi entrare come ospite e usare l’app. L’account salva la collezione nel cloud, la sincronizza tra i dispositivi e sblocca la parte social.",
+      "q7": "Posso esportare la mia collezione?",
+      "a7": "Sì, in un file CSV con nome, set, numero, lingua, variante, condizione, quantità e valore. La collezione è tua.",
+      "q8": "Come disdico Talaiot Pro?",
+      "a8": "Dalle impostazioni degli abbonamenti di App Store o Google Play, quando vuoi. Se disdici durante i 7 giorni di prova, non ti viene addebitato nulla.",
+      "q9": "Talaiot è un’app ufficiale Pokémon?",
+      "a9": "No. Talaiot™ è un’app indipendente. Non è affiliata né associata a The Pokémon Company, Nintendo, Creatures o Game Freak, né sponsorizzata da esse.",
+      "meta.desc": "Scansiona le tue carte con la fotocamera e scopri quanto valgono, anche quelle giapponesi, coreane e cinesi. Prezzi di mercato, collezione organizzata e community. Gratis e senza pubblicità.",
+      "og.desc": "Scansiona le tue carte e scopri quanto valgono. Carta dopo carta, ciò che costruisci resta.",
+      "alt.coleccion": "La mia collezione: valore totale, carte, scansionate, gradate e desiderate",
+      "alt.ficha": "Scheda di una carta con il suo prezzo di mercato",
+      "alt.colecciones": "Catalogo delle collezioni con i progressi di ogni set",
+      "alt.chat": "Chat con una carta inviata all’interno del messaggio",
+      "alt.social": "Sezione social con i collezionisti che segui",
+      "alt.favoritas": "Cartella delle preferite con il valore di ogni carta",
+      "alt.set": "Il set Pitch Black con tutte le sue carte",
+      "alt.perfil": "Profilo di un’altra collezionista con la sua collezione pubblica",
+      "aria.sections": "Sezioni",
+      "aria.lang": "Lingua",
+      "aria.carousel": "Schermate dell’app",
+      "aria.prev": "Precedente",
+      "aria.next": "Successiva",
+      "aria.slide": "Schermata {n}"
+    },
+    pt: {
+      "title": "Talaiot · Scanner de cartas TCG",
+      "nav.how": "Como funciona",
+      "nav.prices": "Preços",
+      "nav.collection": "Coleção",
+      "nav.community": "Comunidade",
+      "nav.premium": "Talaiot Pro",
+      "nav.why": "Por que o Talaiot",
+      "nav.faq": "Perguntas",
+      "nav.cta": "Baixar",
+      "hero.tag": "iPhone · Android",
+      "hero.eyebrow": "Scanner de cartas TCG",
+      "hero.h1a": "Escaneie suas cartas.",
+      "hero.h1b": "Veja quanto elas valem.",
+      "hero.claim": "Carta a carta, o que você constrói permanece.",
+      "hero.sub": "Scanner com preço de mercado na hora, catálogo internacional e asiático, coleção organizada com o valor sempre em dia, preços de cartas graduadas, alertas e uma comunidade de colecionadores com chat. Grátis e sem anúncios.",
+      "b.ios1": "Baixar na",
+      "b.and1": "DISPONÍVEL NO",
+      "hero.soon": "Em breve nas lojas · iPhone e Android",
+      "hero.free": "Grátis · sem anúncios · sem precisar de conta",
+      "h.eyebrow": "Como funciona",
+      "h.h2": "Aponte, veja o preço e salve",
+      "h.lead": "Todo o reconhecimento acontece no seu celular: a foto não sai dele. Sem limite de cartas e sem precisar de conta.",
+      "h.popl": "Preço de mercado",
+      "h.popt": "Pikachu ex · Raw · Cardmarket",
+      "st1h": "Aponte a câmera",
+      "st1p": "O app lê o número e o código do set que vêm impressos na carta e, se eles não estiverem visíveis, compara a ilustração com o catálogo. Cartas internacionais, japonesas, coreanas ou chinesas.",
+      "st2h": "Veja quanto ela vale",
+      "st2p": "Preço de mercado em euros (Cardmarket) ou em dólares (TCGplayer), por variante: normal, reverse, holo. Com o Pro, também das cartas graduadas.",
+      "st3h": "Salve na sua coleção",
+      "st3p": "Idioma, quantidade, condição e pasta. O valor total da sua coleção se atualiza sozinho, dia a dia.",
+      "m1h": "Uma carta por vez",
+      "m1p": "Uma carta na frente da câmera e pronto. Sem limite.",
+      "m2h": "Escaneamento múltiplo",
+      "m2p": "Várias cartas ao mesmo tempo, ao vivo: aponte para a mesa e todas são reconhecidas de uma só passada.",
+      "m3h": "Página do álbum",
+      "m3p": "Uma foto da página do álbum, 2×2, 3×3 ou 4×4, e todas as cartas entram de uma vez.",
+      "chip.free": "Grátis",
+      "pr.eyebrow": "Preços",
+      "pr.h2": "Quanto vale hoje e para onde vai",
+      "pr.lead": "Preços de mercado da Cardmarket e da TCGplayer, atualizados continuamente. Servem como referência: quem manda é o mercado.",
+      "pr1h": "Graduadas, por empresa e nota",
+      "pr1p": "PSA, BGS, CGC, ACE, SGC e TAG: o valor de cada nota, com base em vendas reais.",
+      "pr2h": "A evolução da sua coleção",
+      "pr2p": "Gráficos do valor da sua coleção e do mercado, dia a dia, para você ver de onde vem cada alta.",
+      "pr3h": "Radar de tendências",
+      "pr3p": "As cartas que mais sobem e mais caem nos últimos 30 dias, por catálogo.",
+      "co.eyebrow": "Sua coleção",
+      "co.h2": "Organizada, avaliada e completa, set por set",
+      "co.lead": "Cada carta com seu idioma, sua variante e sua condição. Cada set com sua barra: quanto você já tem e quanto falta.",
+      "co1h": "Pastas",
+      "co1p": "Favoritas, japonesas, graduadas, para troca… públicas ou privadas, como você preferir.",
+      "co2h": "Progresso por set",
+      "co2p": "Uma porcentagem por set e a lista das cartas que faltam.",
+      "co3h": "Valor total sempre em dia",
+      "co3p": "Raw e graduado, em euros ou em dólares, com a tendência das últimas semanas.",
+      "a.tag": "Catálogo próprio",
+      "a.eyebrow": "O catálogo",
+      "a.h2": "Feito para as cartas que os outros apps não enxergam",
+      "a.p1": "A maioria dos scanners é pensada para o mercado americano: catálogo em inglês e preços em dólares. O Talaiot tem um catálogo próprio, dividido em dois blocos: Internacional, com o inglês, os idiomas europeus e preços em euros; e Ásia, com Japão e Coreia de um lado e China do outro, incluindo os sets exclusivos chineses.",
+      "a.bigl": "cartas · Internacional · Japão · Coreia · China",
+      "com.eyebrow": "Comunidade",
+      "com.h2": "Colecionar é melhor em boa companhia",
+      "com.lead": "Perfil, coleções públicas, seguidores e chat com cartas nas mensagens. Tudo grátis e tudo opcional.",
+      "c1h": "Perfil de colecionador",
+      "c1p": "Seu perfil com suas cartas, sua bio e suas coleções públicas.",
+      "c2h": "Coleções públicas",
+      "c2p": "Escolha quais pastas ficam visíveis e explore as de outros colecionadores.",
+      "c3h": "Siga quem você quiser",
+      "c3p": "Seguidores e perfis seguidos, como em qualquer rede social, mas só sobre cartas.",
+      "c4h": "Chat com cartas nas mensagens",
+      "c4p": "Envie uma carta por mensagem e abra a ficha dela no próprio chat.",
+      "p.eyebrow": "Talaiot Pro",
+      "p.h2": "O essencial é grátis. Para o colecionador sério, R$ 14,90 por mês.",
+      "p.free": "Grátis",
+      "p.price0": "R$ 0",
+      "p.price": "R$ 14,90",
+      "p.tag": "7 dias grátis",
+      "p.per": "/ mês",
+      "p.annual": "ou R$ 119,90 por ano",
+      "p.annualSub": "· R$ 9,99 por mês · economia de 33%",
+      "pf1": "Scanner de cartas, uma por vez e sem limite",
+      "pf2": "Todos os preços de mercado, em euros e em dólares",
+      "pf3": "Catálogo completo e coleção sem limite",
+      "pf4": "Perfil, coleções públicas e chat",
+      "pf5": "Sem anúncios",
+      "p.freenote": "E você pode usar sem criar uma conta.",
+      "pp1": "Valor de graduadas por empresa e nota: PSA, BGS, CGC, ACE…",
+      "pp2": "Escaneamento múltiplo: várias cartas de uma vez, ao vivo",
+      "pp3": "Página do álbum em uma só foto: 2×2, 3×3 ou 4×4",
+      "pp4": "Gráficos de evolução da sua coleção e do mercado",
+      "pp5": "Alertas quando uma carta da sua lista de desejos baixa de preço",
+      "p.pronote": "Teste grátis de 7 dias no plano mensal. Sem fidelidade: cancele pela loja. Preços para o Brasil: em outros países, a loja mostra os preços locais.",
+      "q.eyebrow": "Perguntas",
+      "q.h2": "O que mais nos perguntam",
+      "c.h2": "Comece com o que estiver na mesa.",
+      "c.p": "Uma carta avulsa ou o fichário inteiro. Grátis, sem anúncios e sem precisar de conta.",
+      "ft.privacy": "Privacidade",
+      "ft.terms": "Termos de uso",
+      "ft.delete": "Excluir sua conta",
+      "ft.contact": "Contato",
+      "ft.disc": "O Talaiot™ é uma ferramenta independente para colecionadores. Não é afiliado nem associado à The Pokémon Company, Nintendo, Creatures, Game Freak ou Wizards of the Coast, nem patrocinado por elas. Todas as marcas e nomes de produtos pertencem aos respectivos proprietários e são usados apenas para fins de identificação. Os preços vêm de fontes públicas de mercado e servem como referência. © 2026 Talaiot.",
+      "w.claim1": "Carta a carta,",
+      "w.claim2": "o que você constrói permanece.",
+      "ft.made": "Carta a carta, o que você constrói permanece.",
+      "w.eyebrow": "Talaiot",
+      "w.lead": "Um talaiot é uma torre de pedra que foi erguida pedra sobre pedra e continua de pé três mil anos depois.",
+      "ft.story": "Scanner de cartas TCG · Preços · Coleções · Comunidade",
+      "q1": "É grátis?",
+      "a1": "Sim. Escanear carta por carta, ver os preços, organizar a coleção e toda a parte social são grátis e sem anúncios. O Talaiot Pro adiciona os preços de graduadas, o escaneamento múltiplo e de página do álbum, os gráficos e os alertas, com 7 dias de teste grátis.",
+      "q2": "Funciona no iPhone e no Android?",
+      "a2": "Sim, nos dois e com os mesmos recursos. Com uma conta, sua coleção é sincronizada entre os seus dispositivos.",
+      "q3": "Quais cartas o app reconhece?",
+      "a3": "Cartas Pokémon em inglês e nos idiomas europeus, além de japonesas, coreanas e chinesas, incluindo os sets exclusivos da China. O app lê o código do set e o número e, se eles não estiverem visíveis, compara a ilustração. Tudo acontece no seu celular: as fotos não são enviadas para nenhum servidor.",
+      "q4": "De onde vêm os preços e com que frequência são atualizados?",
+      "a4": "Da Cardmarket (euros) e da TCGplayer (dólares), atualizados continuamente; as cartas asiáticas têm fonte própria. Os preços de graduadas vêm de vendas reais, por empresa e nota. Servem como referência: quem manda é o mercado.",
+      "q5": "O app diferencia variantes e cartas graduadas?",
+      "a5": "Sim. Normal, reverse, holo e as demais variantes têm preço próprio. Com o Talaiot Pro, você também vê o valor de graduadas por empresa e nota (PSA, BGS, CGC, ACE, SGC e TAG) e salva cada carta como raw ou graduada.",
+      "q6": "Preciso de uma conta?",
+      "a6": "Não. Você pode entrar como convidado e usar o app. A conta salva sua coleção na nuvem, sincroniza tudo entre dispositivos e libera a parte social.",
+      "q7": "Posso exportar minha coleção?",
+      "a7": "Sim, para um CSV com nome, set, número, idioma, variante, condição, quantidade e valor. A coleção é sua.",
+      "q8": "Como cancelo o Talaiot Pro?",
+      "a8": "Nos ajustes de assinaturas da App Store ou do Google Play, quando quiser. Se você cancelar durante os 7 dias de teste, nada é cobrado.",
+      "q9": "O Talaiot tem ligação com a Pokémon?",
+      "a9": "Não. O Talaiot™ é um app independente. Não é afiliado nem associado à The Pokémon Company, Nintendo, Creatures ou Game Freak, nem patrocinado por elas.",
+      "meta.desc": "Escaneie suas cartas com a câmera e veja quanto elas valem, inclusive as japonesas, coreanas e chinesas. Preços de mercado, coleção organizada e comunidade. Grátis e sem anúncios.",
+      "og.desc": "Escaneie suas cartas e veja quanto elas valem. Carta a carta, o que você constrói permanece.",
+      "alt.coleccion": "Minha coleção: valor total, cartas, escaneadas, graduadas e desejadas",
+      "alt.ficha": "Ficha de uma carta com o preço de mercado",
+      "alt.colecciones": "Catálogo de coleções com o progresso de cada set",
+      "alt.chat": "Chat com uma carta enviada na mensagem",
+      "alt.social": "Área social com os colecionadores que você segue",
+      "alt.favoritas": "Pasta de favoritas com o valor de cada carta",
+      "alt.set": "O set Pitch Black com todas as suas cartas",
+      "alt.perfil": "Perfil de outra colecionadora com a coleção pública dela",
+      "aria.sections": "Seções",
+      "aria.lang": "Idioma",
+      "aria.carousel": "Telas do app",
+      "aria.prev": "Anterior",
+      "aria.next": "Próximo",
+      "aria.slide": "Tela {n}"
     }
   };
 
   var LANG = 'es';
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var fmt = function(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, LANG === 'en' ? ',' : '.'); };
+  var fmt = function(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, LANG === 'en' ? ',' : LANG === 'fr' ? '\u202F' : '.'); };
   function pick(){
     var q = new URLSearchParams(location.search).get('lang');
     if (q && T[q]) return q;
     try { var s = localStorage.getItem('talaiot-lang'); if (s && T[s]) return s; } catch(e){}
-    var n = (navigator.language || 'es').toLowerCase();
-    if (n.indexOf('ca') === 0) return 'ca';
-    if (n.indexOf('es') === 0) return 'es';
-    return 'en';
+    // El idioma del navegador si es uno de los de la app; cualquier otro, inglés (como la app).
+    var n = (navigator.language || 'en').toLowerCase().split(/[-_]/)[0];
+    return T[n] ? n : 'en';
   }
   function apply(lang){
     var t = T[lang];
     LANG = lang;
-    document.documentElement.lang = lang;
+    document.documentElement.lang = HTML_LANG[lang];
     document.title = t.title;
+    var md = document.getElementById('metadesc'); if (md) md.setAttribute('content', t['meta.desc']);
+    var od = document.getElementById('ogdesc'); if (od) od.setAttribute('content', t['og.desc']);
+    var ot = document.getElementById('ogtitle'); if (ot) ot.setAttribute('content', t.title);
+    document.querySelectorAll('[data-ia]').forEach(function(el){ var k = el.getAttribute('data-ia'); if (t[k]) el.setAttribute('aria-label', t[k]); });
+    document.querySelectorAll('[data-ialt]').forEach(function(el){ var k = el.getAttribute('data-ialt'); if (t[k]) el.setAttribute('alt', t[k]); });
+    document.querySelectorAll('.dots button:not(.arrow)').forEach(function(b, i){ b.setAttribute('aria-label', t['aria.slide'].replace('{n}', i + 1)); });
+    var cur = document.getElementById('langcur'); if (cur) cur.textContent = LANG_NAME[lang][lang];
+    document.querySelectorAll('#langmenu [data-lang]').forEach(function(b){ b.textContent = LANG_NAME[lang][b.getAttribute('data-lang')]; });
     document.querySelectorAll('[data-i]').forEach(function(el){ var k = el.getAttribute('data-i'); if (t[k]) el.textContent = t[k]; });
     document.querySelectorAll('.freeline').forEach(function(fl){ fl.innerHTML = t['hero.free'].split(' · ').map(function(x){ return '<span>' + x + '</span>'; }).join(''); });
-    document.querySelectorAll('[data-lang]').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false'); });
+    document.querySelectorAll('[data-lang]').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-lang') === lang ? 'true' : 'false'); });
     document.querySelectorAll('[data-legal]').forEach(function(a){ a.href = 'legal/' + LEGAL[lang][a.getAttribute('data-legal')] + '.html'; });
     // capturas en el idioma elegido
     document.querySelectorAll('img[data-shot]').forEach(function(img){ var src = 'img/' + IMGDIR[lang] + '/' + img.getAttribute('data-shot') + '.webp'; if (img.getAttribute('src') !== src) img.src = src; });
@@ -835,7 +1743,22 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
     document.querySelectorAll('[data-count]').forEach(function(el){ if (el.__done) el.textContent = fmt(+el.getAttribute('data-count')) + (el.getAttribute('data-suffix') || ''); });
     try { localStorage.setItem('talaiot-lang', lang); } catch(e){}
   }
-  document.querySelectorAll('[data-lang]').forEach(function(b){ b.addEventListener('click', function(){ apply(b.getAttribute('data-lang')); }); });
+  // ── Desplegable de idioma ──
+  var lbtn = document.getElementById('langbtn'), lmenu = document.getElementById('langmenu');
+  function menu(open){
+    lmenu.hidden = !open; lbtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { var sel = lmenu.querySelector('[aria-selected="true"]'); if (sel) sel.focus(); }
+  }
+  lbtn.addEventListener('click', function(e){ e.stopPropagation(); menu(lmenu.hidden); });
+  document.addEventListener('click', function(e){ if (!lmenu.hidden && !e.target.closest('#langsel')) menu(false); });
+  document.addEventListener('keydown', function(e){
+    if (lmenu.hidden) return;
+    var opts = Array.prototype.slice.call(lmenu.querySelectorAll('button')), i = opts.indexOf(document.activeElement);
+    if (e.key === 'Escape') { menu(false); lbtn.focus(); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); opts[(i + 1) % opts.length].focus(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); opts[(i - 1 + opts.length) % opts.length].focus(); }
+  });
+  document.querySelectorAll('[data-lang]').forEach(function(b){ b.addEventListener('click', function(){ apply(b.getAttribute('data-lang')); menu(false); lbtn.focus(); }); });
   apply(pick());
 
   // ── Aparición al hacer scroll (IntersectionObserver: funciona en todos los navegadores) ──
@@ -901,7 +1824,7 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
   if (car) {
     var slides = Array.prototype.slice.call(car.querySelectorAll('.slide')), idx = 0, timer = null, userTouched = false, N = slides.length;
     var arrows = dots.querySelectorAll('.arrow');
-    slides.forEach(function(s, i){ var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Pantalla ' + (i + 1)); b.addEventListener('click', function(){ go(i, true); }); dots.insertBefore(b, arrows[1]); s.addEventListener('click', function(){ if (!s.classList.contains('is-center')) go(i, true); }); });
+    slides.forEach(function(s, i){ var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', T[LANG]['aria.slide'].replace('{n}', i + 1)); b.addEventListener('click', function(){ go(i, true); }); dots.insertBefore(b, arrows[1]); s.addEventListener('click', function(){ if (!s.classList.contains('is-center')) go(i, true); }); });
     var dotBtns = Array.prototype.slice.call(dots.querySelectorAll('button:not(.arrow)'));
     function go(i, byUser){
       i = (i + N) % N; idx = i;
