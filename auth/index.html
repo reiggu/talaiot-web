@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Talaiot</title>
@@ -9,33 +10,66 @@
 <link rel="icon" href="https://talaiottcg.com/img/favicon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <!--
-  PUENTE DE LOS ENLACES DE ACCESO (29-sep-2026). Los correos de Supabase («¿Olvidaste la contraseña?»,
-  confirmar la cuenta) llevan aquí: un enlace https se abre bien desde cualquier cliente de correo, y
-  esta página pasa el `code` a la app (talaiot://auth-callback?code=…, o talaiotdev:// con ?app=dev).
-  El canje del código lo hace LA APP: con PKCE solo sirve en el móvil que pidió el correo. Aquí no
-  se lee ni se guarda nada. Si falta el código o el enlace caducó, se explica.
+  PÁGINA DE LOS ENLACES DE ACCESO (29-sep-2026; rehecha el 30-sep). Los correos de Supabase
+  («¿Olvidaste la contraseña?», confirmar la cuenta) traen aquí un `token_hash` de un solo uso.
+  · Contraseña: se cambia AQUÍ, en la web, en cualquier aparato (ordenador o móvil, con cualquier
+    versión de la app). El enlace NO se gasta al abrirlo: solo al guardar la contraseña nueva, así
+    que se puede abrir varias veces dentro de su plazo (y los antivirus del correo que «visitan» los
+    enlaces tampoco lo queman).
+  · Confirmar cuenta: un botón; el enlace se gasta al tocarlo.
+  · Enlaces viejos con `code` (PKCE, 29-sep): se siguen pasando a la app como antes.
+  Aquí no se guarda nada: la sesión de un solo uso vive en memoria y se cierra al acabar.
+  La URL y la clave pública (anon) de Supabase las pone scripts/deploy-web.mjs al publicar.
 -->
 <style>
-  :root { --brand:#D11F25; --ink:#15131A; --muted:#5C574E; --stone:#F4F2EC; --card:#FFFFFF; }
-  * { box-sizing:border-box; }
-  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--stone); color:var(--ink); font:16px/1.6 "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing:antialiased; padding:24px 16px; }
-  main { width:100%; max-width:440px; background:var(--card); border-radius:22px; padding:34px 28px; text-align:center; box-shadow:0 1px 2px rgba(21,19,26,.05), 0 12px 32px -18px rgba(21,19,26,.35); border-top:4px solid var(--brand); }
-  h1 { font-size:22px; line-height:1.25; margin:16px 0 8px; letter-spacing:-0.02em; }
-  p { margin:0 0 14px; color:var(--muted); }
-  .btn { display:inline-block; margin-top:8px; background:var(--ink); color:#fff; text-decoration:none; font-weight:800; border-radius:999px; padding:14px 26px; }
-  .nota { font-size:13.5px; margin-top:18px; }
-  .oculto { display:none; }
-  @media (prefers-color-scheme: dark) {
-    :root { --ink:#F4F2EC; --muted:#B7B0A6; --stone:#1C1C1E; --card:#2A2A2D; }
-    .btn { background:#F4F2EC; color:#15131A; }
+  /* Misma piel que la portada de talaiottcg.com (web/index.html): hero oscuro con la retícula de puntos,
+     barra superior con la marca, antetítulo amarillo y el botón rojo con sombra dura. */
+  :root {
+    --stone:#F4F2EC; --ink:#15131A; --text2:#5C574E; --hair:#E6DFD2;
+    --red:#D11F25; --red2:#AD171C; --yellow:#FFD23F; --led:#2A86D8; --green:#3FAE5A;
+    --f-ui:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --ease:cubic-bezier(.2,.7,.2,1);
   }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body { margin:0; min-height:100vh; display:flex; flex-direction:column; background:var(--ink); color:#fff; font:16px/1.55 var(--f-ui); -webkit-font-smoothing:antialiased; position:relative; overflow-x:clip; }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.3px); background-size:22px 22px; -webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 25%,transparent 75%); mask-image:radial-gradient(ellipse at 50% 30%,#000 25%,transparent 75%); }
+  a { color:inherit; text-decoration:none; }
+  :focus-visible { outline:3px solid var(--led); outline-offset:3px; border-radius:6px; }
+  .nav { position:relative; z-index:2; border-bottom:1px solid rgba(255,255,255,.08); }
+  .nav-in { max-width:1140px; margin:0 auto; padding:0 22px; height:68px; display:flex; align-items:center; }
+  .brand { display:flex; align-items:center; gap:9px; font-weight:800; font-size:1.25rem; letter-spacing:-.022em; }
+  .brand svg { width:34px; height:34px; }
+  main { position:relative; z-index:1; flex:1; width:100%; max-width:480px; margin:0 auto; padding:56px 16px 48px; animation:entra .7s var(--ease) both; }
+  @keyframes entra { from { opacity:0; translate:0 14px; } to { opacity:1; translate:0 0; } }
+  .eyebrow { font-size:.72rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--yellow); margin:0 0 12px; }
+  h1 { font-size:clamp(2rem,7vw,2.7rem); line-height:1.08; font-weight:800; letter-spacing:-.03em; margin:0 0 12px; }
+  #texto { color:#C9C2B8; margin:0 0 26px; font-size:1.05rem; }
+  .ok { display:inline-flex; width:46px; height:46px; border-radius:50%; background:var(--green); align-items:center; justify-content:center; margin-bottom:18px; box-shadow:0 0 0 6px rgba(63,174,90,.18); }
+  .card { background:#fff; color:var(--ink); border-radius:22px; padding:24px 22px 26px; box-shadow:0 40px 70px -30px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.12); }
+  label { display:block; font-weight:700; font-size:.9rem; margin:0 0 7px; }
+  label + input { margin-bottom:16px; }
+  input { width:100%; font:inherit; font-size:16px; padding:13px 15px; border-radius:14px; border:1.5px solid var(--hair); background:#FBFAF7; color:var(--ink); outline:none; transition:border-color .15s; }
+  input:focus { border-color:var(--ink); background:#fff; }
+  .error { color:var(--red); font-weight:700; font-size:.9rem; margin:0; min-height:0; }
+  .error:not(:empty) { margin:2px 0 4px; }
+  .btn { display:flex; width:100%; align-items:center; justify-content:center; margin-top:18px; border-radius:99px; padding:14px 22px; font:inherit; font-weight:800; font-size:1rem; border:2px solid var(--red2); background:var(--red); color:#fff; box-shadow:0 4px 0 var(--red2); cursor:pointer; transition:transform .18s var(--ease), box-shadow .18s; }
+  .btn:hover { transform:translateY(-2px); box-shadow:0 6px 0 var(--red2); }
+  .btn:active { transform:translateY(2px); box-shadow:0 2px 0 var(--red2); }
+  .btn:disabled { opacity:.6; cursor:default; transform:none; box-shadow:0 4px 0 var(--red2); }
+  main > .btn { width:auto; display:inline-flex; margin-top:4px; }
+  .nota { color:#8F877C; font-size:.88rem; margin:22px 0 0; }
+  .nota:empty { display:none; }
+  .oculto { display:none !important; }
+  footer { position:relative; z-index:1; text-align:center; color:#8F877C; font-size:.82rem; padding:0 16px 28px; }
+  footer a:hover { color:#fff; }
+  @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; } }
 </style>
 </head>
 <body>
-<main>
-  <svg width="64" height="64" viewBox="12 12 76 76" fill="none" aria-hidden="true">
+<header class="nav"><div class="nav-in"><a class="brand" href="https://talaiottcg.com/" aria-label="Talaiot"><svg viewBox="12 12 76 76" fill="none" aria-hidden="true">
   <defs><clipPath id="tlBody"><path d="M42 14 H58 Q62 14 63 19 L64 24 H66 Q78 24 79.8 37 L81 45.9 Q81.38 47 80.2 47 Q78.98 47 79.08 48.1 L79.7 51.4 Q79.8 52.5 81 52.5 L81.6 52.5 Q82.2 52.5 82.33 53.6 L85.4 74 Q87 86 73 86 H27 Q13 86 14.6 74 L17.67 53.6 Q17.8 52.5 19 52.5 L19.6 52.5 Q20.2 52.5 20.3 51.4 L20.92 48.1 Q21.02 47 19.8 47 Q18.62 47 19 45.9 L20.2 37 Q22 24 34 24 H36 L37 19 Q38 14 42 14 Z"/></clipPath></defs>
   <g clip-path="url(#tlBody)">
     <rect width="100" height="100" fill="#F4EEE1"/>
@@ -55,39 +89,150 @@
   <circle cx="50" cy="51" r="10.6" stroke="#1A1A1D" stroke-width="2.2"/>
   <circle cx="50" cy="51" r="7" fill="#1A1A1D"/>
   <circle cx="47.4" cy="48.4" r="1.8" fill="#FFFFFF"/>
-</svg>
+</svg><span>Talaiot</span></a></div></header>
+<main>
+  <div class="ok oculto" id="ok"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <p class="eyebrow" id="eyebrow"></p>
   <h1 id="titulo"></h1>
   <p id="texto"></p>
+  <form id="formulario" class="card oculto" novalidate>
+    <label for="clave1" id="l1"></label>
+    <input id="clave1" type="password" autocomplete="new-password" minlength="6" required>
+    <label for="clave2" id="l2"></label>
+    <input id="clave2" type="password" autocomplete="new-password" minlength="6" required>
+    <p class="error" id="error" role="alert"></p>
+    <button class="btn" id="guardar" type="submit"></button>
+  </form>
   <a class="btn oculto" id="boton" href="#"></a>
   <p class="nota" id="nota"></p>
 </main>
+<footer><a href="https://talaiottcg.com/">talaiottcg.com</a></footer>
 <script>
 (function () {
+  var SUPABASE_URL = 'https://ayxodaylworlziceepdm.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eG9kYXlsd29ybHppY2VlcGRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NzQyMzIsImV4cCI6MjA5NzM1MDIzMn0.H2awEQFjKsEkrWJTFg7jDUvc6gnVitHP74oROXnnlPM';
   var T = {
-    es: { abrir:'Abrir Talaiot', abriendo:'Abriendo Talaiot…', abriendoTxt:'Si no se abre sola, toca el botón.', nota:'Abre este enlace en el móvil donde tienes Talaiot y desde el que lo pediste.', caducoT:'El enlace ha caducado', caduco:'Ya se usó o ha pasado demasiado tiempo. Vuelve a pedirlo desde la app.', faltaT:'Enlace incompleto', falta:'Vuelve a pedirlo desde la app y ábrelo sin cambiarlo.' },
-    en: { abrir:'Open Talaiot', abriendo:'Opening Talaiot…', abriendoTxt:'If it doesn’t open on its own, tap the button.', nota:'Open this link on the phone where you have Talaiot and that you requested it from.', caducoT:'This link has expired', caduco:'It has already been used or too much time has passed. Request it again from the app.', faltaT:'Incomplete link', falta:'Request it again from the app and open it without changing it.' },
-    ca: { abrir:'Obre Talaiot', abriendo:'Obrint Talaiot…', abriendoTxt:'Si no s’obre sola, toca el botó.', nota:'Obre aquest enllaç al mòbil on tens Talaiot i des del qual el vas demanar.', caducoT:'L’enllaç ha caducat', caduco:'Ja s’ha fet servir o ha passat massa temps. Torna’l a demanar des de l’app.', faltaT:'Enllaç incomplet', falta:'Torna’l a demanar des de l’app i obre’l sense canviar-lo.' },
-    fr: { abrir:'Ouvrir Talaiot', abriendo:'Ouverture de Talaiot…', abriendoTxt:'Si elle ne s’ouvre pas toute seule, touchez le bouton.', nota:'Ouvrez ce lien sur le téléphone où vous avez Talaiot et depuis lequel vous l’avez demandé.', caducoT:'Ce lien a expiré', caduco:'Il a déjà été utilisé ou trop de temps s’est écoulé. Redemandez-le depuis l’app.', faltaT:'Lien incomplet', falta:'Redemandez-le depuis l’app et ouvrez-le sans le modifier.' },
-    de: { abrir:'Talaiot öffnen', abriendo:'Talaiot wird geöffnet …', abriendoTxt:'Falls sie sich nicht von selbst öffnet, tippe auf den Button.', nota:'Öffne diesen Link auf dem Handy, auf dem du Talaiot hast und von dem aus du ihn angefordert hast.', caducoT:'Der Link ist abgelaufen', caduco:'Er wurde schon verwendet oder es ist zu viel Zeit vergangen. Fordere ihn in der App neu an.', faltaT:'Unvollständiger Link', falta:'Fordere ihn in der App neu an und öffne ihn, ohne ihn zu verändern.' },
-    it: { abrir:'Apri Talaiot', abriendo:'Apertura di Talaiot in corso…', abriendoTxt:'Se non si apre da sola, tocca il pulsante.', nota:'Apri questo link sul telefono dove hai Talaiot e da cui l’hai richiesto.', caducoT:'Il link è scaduto', caduco:'È già stato usato o è passato troppo tempo. Richiedilo di nuovo dall’app.', faltaT:'Link incompleto', falta:'Richiedilo di nuovo dall’app e aprilo senza modificarlo.' },
-    pt: { abrir:'Abrir o Talaiot', abriendo:'Abrindo o Talaiot…', abriendoTxt:'Se não abrir sozinho, toque no botão.', nota:'Abra este link no celular em que você tem o Talaiot e de onde fez o pedido.', caducoT:'O link expirou', caduco:'Ele já foi usado ou passou tempo demais. Peça de novo pelo app.', faltaT:'Link incompleto', falta:'Peça de novo pelo app e abra o link sem alterá-lo.' }
+    es: { cuenta:'Tu cuenta', abrir:'Abrir Talaiot', abriendo:'Abriendo Talaiot…', abriendoTxt:'Si no se abre sola, toca el botón.', nota:'Abre este enlace en el móvil donde tienes Talaiot y desde el que lo pediste.', caducoT:'El enlace ha caducado', caduco:'Ya se usó o ha pasado demasiado tiempo. Vuelve a pedirlo desde la app.', faltaT:'Enlace incompleto', falta:'Vuelve a pedirlo desde la app y ábrelo sin cambiarlo.',
+      passT:'Nueva contraseña', passSub:'Crea una contraseña nueva para tu cuenta de Talaiot.', l1:'Nueva contraseña', ph1:'Mín. 6 caracteres', l2:'Repite la contraseña', guardar:'Guardar contraseña', guardando:'Guardando…', corta:'La contraseña debe tener al menos 6 caracteres.', noCoinciden:'Las contraseñas no coinciden.', igual:'La contraseña nueva tiene que ser distinta de la anterior.', debil:'Esa contraseña es demasiado fácil de adivinar. Prueba con otra más larga.', fallo:'No se ha podido guardar. Revisa la conexión e inténtalo de nuevo.', listoT:'Contraseña cambiada', listo:'Ya puedes entrar en Talaiot con tu contraseña nueva.',
+      confT:'Confirma tu cuenta', conf:'Toca el botón para terminar de crear tu cuenta de Talaiot.', confBtn:'Confirmar mi cuenta', confOkT:'Cuenta confirmada', confOk:'Ya puedes entrar en Talaiot con tu correo y tu contraseña.' },
+    en: { cuenta:'Your account', abrir:'Open Talaiot', abriendo:'Opening Talaiot…', abriendoTxt:'If it doesn’t open on its own, tap the button.', nota:'Open this link on the phone where you have Talaiot and that you requested it from.', caducoT:'This link has expired', caduco:'It has already been used or too much time has passed. Request it again from the app.', faltaT:'Incomplete link', falta:'Request it again from the app and open it without changing it.',
+      passT:'New password', passSub:'Create a new password for your Talaiot account.', l1:'New password', ph1:'Min. 6 characters', l2:'Repeat the password', guardar:'Save password', guardando:'Saving…', corta:'The password must be at least 6 characters.', noCoinciden:'The passwords don’t match.', igual:'The new password must be different from the old one.', debil:'That password is too easy to guess. Try a longer one.', fallo:'Couldn’t save it. Check your connection and try again.', listoT:'Password changed', listo:'You can now sign in to Talaiot with your new password.',
+      confT:'Confirm your account', conf:'Tap the button to finish creating your Talaiot account.', confBtn:'Confirm my account', confOkT:'Account confirmed', confOk:'You can now sign in to Talaiot with your email and password.' },
+    ca: { cuenta:'El teu compte', abrir:'Obre Talaiot', abriendo:'Obrint Talaiot…', abriendoTxt:'Si no s’obre sola, toca el botó.', nota:'Obre aquest enllaç al mòbil on tens Talaiot i des del qual el vas demanar.', caducoT:'L’enllaç ha caducat', caduco:'Ja s’ha fet servir o ha passat massa temps. Torna’l a demanar des de l’app.', faltaT:'Enllaç incomplet', falta:'Torna’l a demanar des de l’app i obre’l sense canviar-lo.',
+      passT:'Contrasenya nova', passSub:'Crea una contrasenya nova per al teu compte de Talaiot.', l1:'Contrasenya nova', ph1:'Mín. 6 caràcters', l2:'Repeteix la contrasenya', guardar:'Desa la contrasenya', guardando:'S’està desant…', corta:'La contrasenya ha de tenir almenys 6 caràcters.', noCoinciden:'Les contrasenyes no coincideixen.', igual:'La contrasenya nova ha de ser diferent de l’anterior.', debil:'Aquesta contrasenya és massa fàcil d’endevinar. Prova’n una de més llarga.', fallo:'No s’ha pogut desar. Revisa la connexió i torna-ho a provar.', listoT:'Contrasenya canviada', listo:'Ja pots entrar a Talaiot amb la contrasenya nova.',
+      confT:'Confirma el teu compte', conf:'Toca el botó per acabar de crear el teu compte de Talaiot.', confBtn:'Confirma el meu compte', confOkT:'Compte confirmat', confOk:'Ja pots entrar a Talaiot amb el teu correu i la teva contrasenya.' },
+    fr: { cuenta:'Votre compte', abrir:'Ouvrir Talaiot', abriendo:'Ouverture de Talaiot…', abriendoTxt:'Si elle ne s’ouvre pas toute seule, touchez le bouton.', nota:'Ouvrez ce lien sur le téléphone où vous avez Talaiot et depuis lequel vous l’avez demandé.', caducoT:'Ce lien a expiré', caduco:'Il a déjà été utilisé ou trop de temps s’est écoulé. Redemandez-le depuis l’app.', faltaT:'Lien incomplet', falta:'Redemandez-le depuis l’app et ouvrez-le sans le modifier.',
+      passT:'Nouveau mot de passe', passSub:'Créez un nouveau mot de passe pour votre compte Talaiot.', l1:'Nouveau mot de passe', ph1:'6 caractères min.', l2:'Confirmez le mot de passe', guardar:'Enregistrer le mot de passe', guardando:'Enregistrement…', corta:'Le mot de passe doit contenir au moins 6 caractères.', noCoinciden:'Les mots de passe ne correspondent pas.', igual:'Le nouveau mot de passe doit être différent de l’ancien.', debil:'Ce mot de passe est trop facile à deviner. Essayez-en un plus long.', fallo:'Impossible d’enregistrer. Vérifiez votre connexion et réessayez.', listoT:'Mot de passe modifié', listo:'Vous pouvez maintenant vous connecter à Talaiot avec votre nouveau mot de passe.',
+      confT:'Confirmez votre compte', conf:'Touchez le bouton pour terminer la création de votre compte Talaiot.', confBtn:'Confirmer mon compte', confOkT:'Compte confirmé', confOk:'Vous pouvez maintenant vous connecter à Talaiot avec votre e-mail et votre mot de passe.' },
+    de: { cuenta:'Dein Konto', abrir:'Talaiot öffnen', abriendo:'Talaiot wird geöffnet …', abriendoTxt:'Falls sie sich nicht von selbst öffnet, tippe auf den Button.', nota:'Öffne diesen Link auf dem Handy, auf dem du Talaiot hast und von dem aus du ihn angefordert hast.', caducoT:'Der Link ist abgelaufen', caduco:'Er wurde schon verwendet oder es ist zu viel Zeit vergangen. Fordere ihn in der App neu an.', faltaT:'Unvollständiger Link', falta:'Fordere ihn in der App neu an und öffne ihn, ohne ihn zu verändern.',
+      passT:'Neues Passwort', passSub:'Lege ein neues Passwort für dein Talaiot-Konto fest.', l1:'Neues Passwort', ph1:'Mind. 6 Zeichen', l2:'Passwort wiederholen', guardar:'Passwort speichern', guardando:'Wird gespeichert …', corta:'Das Passwort muss mindestens 6 Zeichen lang sein.', noCoinciden:'Die Passwörter stimmen nicht überein.', igual:'Das neue Passwort muss sich vom alten unterscheiden.', debil:'Dieses Passwort ist zu leicht zu erraten. Versuch es mit einem längeren.', fallo:'Speichern fehlgeschlagen. Prüfe deine Verbindung und versuch es noch einmal.', listoT:'Passwort geändert', listo:'Du kannst dich jetzt mit deinem neuen Passwort bei Talaiot anmelden.',
+      confT:'Bestätige dein Konto', conf:'Tippe auf den Button, um dein Talaiot-Konto fertig einzurichten.', confBtn:'Mein Konto bestätigen', confOkT:'Konto bestätigt', confOk:'Du kannst dich jetzt mit deiner E-Mail-Adresse und deinem Passwort bei Talaiot anmelden.' },
+    it: { cuenta:'Il tuo account', abrir:'Apri Talaiot', abriendo:'Apertura di Talaiot in corso…', abriendoTxt:'Se non si apre da sola, tocca il pulsante.', nota:'Apri questo link sul telefono dove hai Talaiot e da cui l’hai richiesto.', caducoT:'Il link è scaduto', caduco:'È già stato usato o è passato troppo tempo. Richiedilo di nuovo dall’app.', faltaT:'Link incompleto', falta:'Richiedilo di nuovo dall’app e aprilo senza modificarlo.',
+      passT:'Nuova password', passSub:'Crea una nuova password per il tuo account Talaiot.', l1:'Nuova password', ph1:'Min. 6 caratteri', l2:'Ripeti la password', guardar:'Salva password', guardando:'Salvataggio…', corta:'La password deve avere almeno 6 caratteri.', noCoinciden:'Le password non coincidono.', igual:'La nuova password deve essere diversa da quella precedente.', debil:'Questa password è troppo facile da indovinare. Provane una più lunga.', fallo:'Impossibile salvare. Controlla la connessione e riprova.', listoT:'Password cambiata', listo:'Ora puoi accedere a Talaiot con la nuova password.',
+      confT:'Conferma il tuo account', conf:'Tocca il pulsante per finire di creare il tuo account Talaiot.', confBtn:'Conferma il mio account', confOkT:'Account confermato', confOk:'Ora puoi accedere a Talaiot con la tua email e la tua password.' },
+    pt: { cuenta:'Sua conta', abrir:'Abrir o Talaiot', abriendo:'Abrindo o Talaiot…', abriendoTxt:'Se não abrir sozinho, toque no botão.', nota:'Abra este link no celular em que você tem o Talaiot e de onde fez o pedido.', caducoT:'O link expirou', caduco:'Ele já foi usado ou passou tempo demais. Peça de novo pelo app.', faltaT:'Link incompleto', falta:'Peça de novo pelo app e abra o link sem alterá-lo.',
+      passT:'Nova senha', passSub:'Crie uma nova senha para sua conta do Talaiot.', l1:'Nova senha', ph1:'Mín. 6 caracteres', l2:'Repita a senha', guardar:'Salvar senha', guardando:'Salvando…', corta:'A senha deve ter pelo menos 6 caracteres.', noCoinciden:'As senhas não coincidem.', igual:'A nova senha precisa ser diferente da anterior.', debil:'Essa senha é fácil demais de adivinhar. Tente uma mais longa.', fallo:'Não foi possível salvar. Verifique sua conexão e tente de novo.', listoT:'Senha alterada', listo:'Agora você já pode entrar no Talaiot com a nova senha.',
+      confT:'Confirme sua conta', conf:'Toque no botão para terminar de criar sua conta do Talaiot.', confBtn:'Confirmar minha conta', confOkT:'Conta confirmada', confOk:'Agora você já pode entrar no Talaiot com seu e-mail e sua senha.' }
   };
   var q = new URLSearchParams(location.search);
   var h = new URLSearchParams(location.hash.replace(/^#/, ''));
-  var nav = (q.get('lang') || navigator.language || 'es').toLowerCase();
-  var lang = nav.indexOf('ca') === 0 ? 'ca' : (T[nav.slice(0, 2)] ? nav.slice(0, 2) : 'en');
+  var elegir = function (v) { v = (v || '').toLowerCase(); return v.indexOf('ca') === 0 ? 'ca' : (T[v.slice(0, 2)] ? v.slice(0, 2) : ''); };
+  var lang = elegir(q.get('lang')) || elegir(navigator.language) || 'en';
   var t = T[lang];
   document.documentElement.lang = lang;
   var $ = function (id) { return document.getElementById(id); };
+  $('eyebrow').textContent = t.cuenta;
+  var pinta = function (titulo, texto) { $('titulo').textContent = titulo; $('texto').textContent = texto; };
+  var esMovil = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform));
+  // La variante de pruebas pide el correo con ?app=dev en su vuelta (authStore → enlaceDeVuelta).
+  var esquema = (q.get('app') === 'dev' || /app=dev/.test(q.get('r') || '')) ? 'talaiotdev' : 'talaiot';
+  var botonApp = function () { if (!esMovil) return; var b = $('boton'); b.href = esquema + '://'; b.textContent = t.abrir; b.className = 'btn'; };
+  var caducado = function () { $('formulario').className = 'card oculto'; pinta(t.caducoT, t.caduco); };
+
+  var codigoError = q.get('error_code') || h.get('error_code') || q.get('error') || h.get('error');
+  if (codigoError) { caducado(); return; }
+
+  // Llamadas a la API de Auth de Supabase (las mismas que hace supabase-js, sin cargarlo entero).
+  var api = function (metodo, ruta, cuerpo, token) {
+    var cab = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+    if (token) cab.Authorization = 'Bearer ' + token;
+    return fetch(SUPABASE_URL + '/auth/v1' + ruta, { method: metodo, headers: cab, body: cuerpo ? JSON.stringify(cuerpo) : undefined })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, status: r.status, j: j || {} }; }); });
+  };
+  var verificar = function (tokenHash, tipo) { return api('POST', '/verify', { type: tipo, token_hash: tokenHash }); };
+  var enlaceGastado = function (res) { var c = res.j.error_code || res.j.code; return c === 'otp_expired' || c === 'otp_disabled' || res.status === 403 || res.status === 401; };
+
+  var tokenHash = q.get('token_hash');
+  var tipo = q.get('type');
+  if (tokenHash && !/^[\w-]{6,200}$/.test(tokenHash)) tokenHash = null;
+
+  // ── CONTRASEÑA NUEVA ── el enlace solo se gasta al guardar (verificar = gastarlo).
+  if (tokenHash && tipo === 'recovery') {
+    pinta(t.passT, t.passSub);
+    $('l1').textContent = t.l1; $('clave1').placeholder = t.ph1;
+    $('l2').textContent = t.l2; $('clave2').placeholder = t.l2;
+    $('guardar').textContent = t.guardar;
+    $('formulario').className = 'card';
+    var sesion = null;   // si guardar falla DESPUÉS de verificar, se reintenta con esta sesión (el enlace ya no vale)
+    $('formulario').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var c1 = $('clave1').value, c2 = $('clave2').value;
+      if (c1.length < 6) { $('error').textContent = t.corta; return; }
+      if (c1 !== c2) { $('error').textContent = t.noCoinciden; return; }
+      $('error').textContent = '';
+      var boton = $('guardar'); boton.disabled = true; boton.textContent = t.guardando;
+      var suelta = function (msg) { boton.disabled = false; boton.textContent = t.guardar; $('error').textContent = msg; };
+      (sesion ? Promise.resolve({ ok: true, j: sesion }) : verificar(tokenHash, 'recovery'))
+        .then(function (v) {
+          if (!v.ok || !v.j.access_token) { if (enlaceGastado(v)) caducado(); else suelta(t.fallo); return; }
+          sesion = v.j;
+          return api('PUT', '/user', { password: c1 }, sesion.access_token).then(function (u) {
+            if (!u.ok) {
+              var c = u.j.error_code || '';
+              suelta(c === 'same_password' ? t.igual : c === 'weak_password' ? t.debil : t.fallo);
+              return;
+            }
+            // Cerrar esta sesión de un solo uso: la cuenta se usa en la app, no aquí.
+            api('POST', '/logout?scope=local', null, sesion.access_token).catch(function () {});
+            sesion = null;
+            $('formulario').className = 'card oculto';
+            $('ok').className = 'ok';
+            pinta(t.listoT, t.listo);
+            botonApp();
+          });
+        })
+        .catch(function () { suelta(t.fallo); });
+    });
+    return;
+  }
+
+  // ── CONFIRMAR LA CUENTA ── un toque (así los antivirus del correo que abren enlaces no la gastan).
+  if (tokenHash && (tipo === 'email' || tipo === 'signup')) {
+    pinta(t.confT, t.conf);
+    var bc = $('boton'); bc.href = '#'; bc.textContent = t.confBtn; bc.className = 'btn';
+    var enCurso = false;
+    bc.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (enCurso) return; enCurso = true;
+      verificar(tokenHash, tipo).then(function (v) {
+        enCurso = false;
+        if (!v.ok) { if (enlaceGastado(v)) { bc.className = 'btn oculto'; caducado(); } else $('texto').textContent = t.fallo; return; }
+        if (v.j.access_token) api('POST', '/logout?scope=local', null, v.j.access_token).catch(function () {});
+        bc.className = 'btn oculto';
+        $('ok').className = 'ok';
+        pinta(t.confOkT, t.confOk);
+        botonApp();
+      }).catch(function () { enCurso = false; $('texto').textContent = t.fallo; });
+    });
+    return;
+  }
+
+  // ── ENLACES VIEJOS (29-sep, PKCE): el `code` solo lo puede canjear la app que pidió el correo.
   var code = q.get('code');
-  var error = q.get('error_code') || h.get('error_code') || q.get('error') || h.get('error');
+  if (!code || !/^[\w-]{6,200}$/.test(code)) { pinta(t.faltaT, t.falta); return; }
   $('nota').textContent = t.nota;
-  if (error) { $('titulo').textContent = t.caducoT; $('texto').textContent = t.caduco; return; }
-  if (!code || !/^[\w-]{6,200}$/.test(code)) { $('titulo').textContent = t.faltaT; $('texto').textContent = t.falta; return; }
-  var esquema = q.get('app') === 'dev' ? 'talaiotdev' : 'talaiot';
   var destino = esquema + '://auth-callback?code=' + encodeURIComponent(code);
-  $('titulo').textContent = t.abriendo;
-  $('texto').textContent = t.abriendoTxt;
+  pinta(t.abriendo, t.abriendoTxt);
   var b = $('boton'); b.href = destino; b.textContent = t.abrir; b.className = 'btn';
   setTimeout(function () { location.href = destino; }, 150);
 })();
