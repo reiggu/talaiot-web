@@ -896,6 +896,20 @@ footer{background:var(--ink);color:#B9B2A8;padding:56px 0 48px;font-size:.9rem;b
   //    de las fichas (App Store: https://apps.apple.com/app/id6810394795 · Play:
   //    https://play.google.com/store/apps/details?id=com.talaiot.app) y desaparece la línea «Muy pronto».
   var LINKS = { ios: 'https://apps.apple.com/app/id6810394795', android: 'https://play.google.com/store/apps/details?id=com.talaiot.app' };
+  // ── Medición de campañas (20-oct-2026). talaiottcg.com/?src=holobros → el botón de App Store lleva ct=holobros
+  //    (App Store Connect > Analytics > Campaigns) y el de Google Play, referrer utm_source=holobros (Play Console >
+  //    Adquisición). El src se recuerda durante la visita (sessionStorage) aunque se cambie de idioma.
+  //    PT = «provider token» de App Store Connect (sale en cualquier enlace de campaña generado allí: pt=XXXXXX).
+  var PT = '129179270';
+  var SRC = 'web';
+  try {
+    var qs = new URLSearchParams(location.search).get('src');
+    if (qs) { SRC = qs.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 30) || 'web'; sessionStorage.setItem('talaiot_src', SRC); }
+    else { SRC = sessionStorage.getItem('talaiot_src') || 'web'; }
+  } catch (e) {}
+  if (PT) LINKS.ios = 'https://apps.apple.com/app/apple-store/id6810394795?pt=' + PT + '&ct=' + SRC + '&mt=8';
+  LINKS.android = 'https://play.google.com/store/apps/details?id=com.talaiot.app&referrer=' +
+    encodeURIComponent('utm_source=' + SRC + '&utm_medium=' + (SRC === 'web' ? 'organic' : 'campaign') + '&utm_campaign=' + SRC);
   var LEGAL = {
     es: { privacy: 'privacidad', terms: 'terminos', delete: 'borrar-cuenta' },
     ca: { privacy: 'privacitat', terms: 'termes', delete: 'esborrar-compte' },
